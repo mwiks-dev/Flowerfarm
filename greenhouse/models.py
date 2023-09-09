@@ -1,4 +1,7 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
+from django.utils.translation import gettext as _
+
 
 # Create your models here.
 
@@ -13,3 +16,20 @@ class Production(models.Model):
 
     def __str__(self):
         return self.greenhouse_number
+
+# User class
+class User(AbstractUser):
+    # Define the extra fields related to User here
+    first_name = models.CharField(_('First Name of User'),null = True, max_length = 20)
+    last_name = models.CharField(_('Last Name of User'),null = True, max_length = 20)
+    email = models.EmailField(unique=True)
+
+    groups = models.ManyToManyField('auth.Group', verbose_name=_('groups'), blank=True, related_name='custom_user_groups')
+    user_permissions = models.ManyToManyField('auth.Permission', verbose_name=_('user permissions'), blank=True, related_name='custom_user_permissions')
+                              
+    #custom permissions related to User.
+    class Meta:
+        permissions = (
+            ("can edit", "To provide edit form"),
+            ("can download reports", "To provide download access")
+            )
