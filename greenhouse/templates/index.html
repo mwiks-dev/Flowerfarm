@@ -1,45 +1,41 @@
 {% extends 'base.html' %}
 {% block content %}
-<!-- calendarapp/templates/calendarapp/calendar.html -->
-<!DOCTYPE html>
-<html>
-<head>
-    <title>My Calendar</title>
-</head>
-<body>
-    <div className="text-center sm:text-left">
-        <h1>My Calendar</h1>
-    <table border="1">
-        <tr>
-            <th class="text-blue-600">{{ year }} - {{ month }}</th>
-        </tr>
-        <tr>
-            <th class="text-lg">Mon</th>
-            <th>Tue</th>
-            <th>Wed</th>
-            <th>Thu</th>
-            <th>Fri</th>
-            <th>Sat</th>
-            <th>Sun</th>
-        </tr>
-        {% for week in calendar %}
+<div class="text-center pt-14 sm:text-left">
+    <h1>Welcome, {{ username|title }}</h1>
+    <div class="flex justify-center">
+        <table class="border border-gray-300 w-3/4 ">
             <tr>
-                {% for day in week %}
-                    {% if day != 0 %}
-                        {% if day == today %}
-                            <td><a href="/calendar/{{ year }}/{{ month }}/{{ day }}/">{% if day == today %}{{ day }} (Today){% else %}{{ day }}{% endif %}</a></td>
-                        {% else %}
-                            <td>{{ day }}</td>
-                        {% endif %}
-                    {% else %}
-                        <td>&nbsp;</td>
-                    {% endif %}
-                {% endfor %}
+                <th class="text-red-600">{{ year }} - {{ month }}</th>
             </tr>
-        {% endfor %}
-    </table>
+            <tr class="border-b border-gray-300 mx-auto">
+                <th>Mon</th>
+                <th>Tue</th>
+                <th>Wed</th>
+                <th>Thu</th>
+                <th>Fri</th>
+                <th>Sat</th>
+                <th>Sun</th>
+            </tr>
+            {% for week in calendar %}
+                <tr class="border-b border-gray-300">
+                    {% for day in week %}
+                        {% if day != 0 %}
+                            {% if day == today %}
+                                <td class="border-r border-b border-gray-300">
+                                    <a href="{% url 'production_data'%}">
+                                            {{ day }}(Today)
+                                    </a>
+                                </td>
+                            {% else %}
+                                <td class="border-r border-b border-gray-300">{{ day }}</td>
+                            {% endif %}
+                        {% else %}
+                            <td>&nbsp;</td>
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
     </div>
-</body>
-</html>
-
+</div>
 {% endblock %}
