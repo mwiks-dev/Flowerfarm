@@ -1,0 +1,29 @@
+{% block content %}
+<!-- calendar.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Calendar View</title>
+</head>
+<body>
+    <h1>Calendar View</h1>
+
+    <div>
+        <form method="get" action="{% url 'index' %}">
+            <label for="date">Select a date:</label>
+            <input type="text" id="date" name="date" data-provide="datepicker" value="{{ selected_date }}">
+            <input type="submit" value="Go">
+        </form>
+    </div>
+
+    <h2>Production Data Entry for {{ selected_date }}</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Save">
+    </form>
+    
+</body>
+</html>
+
+{% endblock %}

@@ -24,9 +24,12 @@ class User(AbstractUser):
             ("can edit", "To provide edit form"),
             ("can download reports", "To provide download access")
             )
+    
+    def __str__(self):
+        return f"{self.username}"
 
 class Production(models.Model):
-    production_date = models.DateField()
+    production_date = models.DateField(auto_now_add=True)
     greenhouse_number = models.IntegerField()
     variety = models.CharField(max_length=50)
     length = models.DecimalField(max_digits=5, decimal_places=2)
@@ -35,4 +38,4 @@ class Production(models.Model):
     rejection_reason = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
-        return self.greenhouse_number
+        return f"Production for {self.production_date}"
