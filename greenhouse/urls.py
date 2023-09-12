@@ -7,6 +7,6 @@ import datetime
 
 urlpatterns = [
     # path('', views.index, name='index'),
-    path('', views.index, name='index'),
+    path('calendar/<int:year>/<int:month>/', views.calendar_view, name='index'),
 
 ]

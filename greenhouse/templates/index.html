@@ -1,28 +1,44 @@
+{% extends 'base.html' %}
 {% block content %}
-<!-- calendar.html -->
+<!-- calendarapp/templates/calendarapp/calendar.html -->
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Calendar View</title>
+    <title>My Calendar</title>
 </head>
 <body>
-    <h1>Calendar View</h1>
-
-    <div>
-        <form method="get" action="{% url 'index' %}">
-            <label for="date">Select a date:</label>
-            <input type="text" id="date" name="date" data-provide="datepicker" value="{{ selected_date }}">
-            <input type="submit" value="Go">
-        </form>
+    <div className="text-center sm:text-left">
+        <h1>My Calendar</h1>
+    <table border="1">
+        <tr>
+            <th class="text-blue-600">{{ year }} - {{ month }}</th>
+        </tr>
+        <tr>
+            <th class="text-lg">Mon</th>
+            <th>Tue</th>
+            <th>Wed</th>
+            <th>Thu</th>
+            <th>Fri</th>
+            <th>Sat</th>
+            <th>Sun</th>
+        </tr>
+        {% for week in calendar %}
+            <tr>
+                {% for day in week %}
+                    {% if day != 0 %}
+                        {% if day == today %}
+                            <td><a href="/calendar/{{ year }}/{{ month }}/{{ day }}/">{% if day == today %}{{ day }} (Today){% else %}{{ day }}{% endif %}</a></td>
+                        {% else %}
+                            <td>{{ day }}</td>
+                        {% endif %}
+                    {% else %}
+                        <td>&nbsp;</td>
+                    {% endif %}
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </table>
     </div>
-
-    <h2>Production Data Entry for {{ selected_date }}</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="Save">
-    </form>
-    
 </body>
 </html>
 

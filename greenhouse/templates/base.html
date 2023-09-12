@@ -7,7 +7,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     {% block styles%}
-        {% bootstrap_css %}
         <link rel="shortcut icon" href="{% static 'favicon.ico'%}">
         <link rel="stylesheet" href="{% static 'css/styles.css' %}">
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,7 +23,6 @@
     {% block scripts %}
         <script src="{% static 'js/min.js'%}"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-        {% bootstrap_javascript %}
     {% endblock %}
 </body>
 <footer>
