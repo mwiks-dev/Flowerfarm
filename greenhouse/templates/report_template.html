@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block content %}
+<!-- report_template.html -->
+<div class="text-center pt-14 sm:text-left">
+    <h1>Reports</h1>
+    <div class="py-4">
+        <form method="GET">
+            <input type="text" name="q" placeholder="Search by Variety or G-House No." value="{{ query }}">
+            <button type="submit" class="bg-green-600 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Search</button>
+        </form>
+    </div>
+
+    <!-- Display Data -->
+    <table>
+        <thead>
+            <tr class="border-b border-gray-300 mx-auto">
+                <th>Date</th>
+                <th>G-House No.</th>
+                <th>Variety</th>
+                <th>Length</th>
+                <th>Staff</th>
+                <th>Rejected Flowers</th>
+                <th>Rejection Reason</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in page_obj %}
+                <tr>
+                    <td class="text-center border-r border-b border-gray-300">{{ item.production_date }}</td>
+                    <td class="text-center border-r border-b border-gray-300">{{ item.greenhouse_number }}</td>
+                    <td class="text-center border-r border-b border-gray-300">{{ item.variety }}</td>
+                    <td class="text-center border-r border-b border-gray-300">{{ item.length }}</td>
+                    <td class="text-center border-r border-b border-gray-300">{{ item.staff_member }}</td>
+                    <td class="text-center border-r border-b border-gray-300">{{ item.rejected_flowers }}</td>
+                    <td class="text-center border-r border-b border-gray-300">{{ item.rejection_reason }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="2">No data found.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Pagination Controls -->
+    <div class="pagination text-center pt-2">
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+                <a href="?page=1">&laquo; Prev </a>
+                <!-- <a href="?page={{ page_obj.previous_page_number }}">previous</a> -->
+            {% endif %}
+
+            <span class="current-page text-green-600 text-ellipsis ">Page {{ page_obj.number }}</span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}"> Next &raquo;</a>
+                <!-- <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a> -->
+            {% endif %}
+        </span>
+    </div>
+</div>
+
+{% endblock %}

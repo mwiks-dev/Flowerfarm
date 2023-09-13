@@ -1,5 +1,8 @@
 from django.shortcuts import render
 from django.shortcuts import redirect, render
+from django.core.paginator import Paginator
+from django.db.models import Q
+
 
 import calendar
 from datetime import datetime
@@ -7,8 +10,8 @@ from datetime import datetime
 from.models import Production, User
 from .forms import ProductionForm
 
-# Create your views here.
-#    
+# Create your views here.  
+#index/calendar view function
 def calendar_view(request):
     current_user = request.user
     username = current_user.username
@@ -52,3 +55,18 @@ def production_data(request):
 def login(request, id):
     user = User.objects.filter(id = id)
     return redirect('/')
+
+#report generation
+def generate_report(request):
+    data = Production.objects.all()
+
+    # Search functionality
+    query = request.GET.get('q')
+    if query:
+        data = data.filter(Q(variety__icontains=query) | Q(greenhouse_number__icontains=query))
+    paginator = Paginator(data, 1)
+
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'report_template.html',{'page_obj':page_obj} )
