@@ -10,6 +10,7 @@ urlpatterns = [
     path('', views.calendar_view, name='index'),
     path('production_data/', views.upload_prod_data, name='production_data'),
     path('reports/', views.generate_report, name='reports'),
+    path('profile/', views.user_profile, name='profile'),
 
     
 

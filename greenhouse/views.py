@@ -3,17 +3,41 @@ from django.shortcuts import redirect, render
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+
 
 
 
 import calendar
 from datetime import datetime
-import time
 
-from.models import Production, User
-from .forms import ProductionForm
+from.models import Production, Profile
+from .forms import ProductionForm,UpdateProfileForm
 
 # Create your views here.  
+
+#profile page
+@login_required(login_url='/accounts/login/')
+def user_profile(request):
+    current_user = request.user
+    profile = Profile.objects.filter(user_id=current_user.id).first()
+
+    return render(request,"profile/profile.html",{'profile':profile})
+
+# update profile page
+@login_required(login_url='/accounts/login/')
+def update_profile(request,id):
+    user = User.objects.get(id=id)
+    profile = Profile.objects.get(user = user)
+    form = UpdateProfileForm(instance=profile)
+    if request.method == "POST":
+            form = UpdateProfileForm(request.POST,request.FILES,instance=profile)
+            if form.is_valid():  
+                profile = form.save(commit=False)
+                profile.save()
+            return redirect('profile') 
+            
+    return render(request, 'profile/update_profile.html', {"form":form})
 
 #index/calendar view function
 @login_required(login_url='/accounts/login/')
@@ -39,14 +63,6 @@ def calendar_view(request):
 @login_required(login_url='/accounts/login/')
 def upload_prod_data(request):
     today = datetime.today()
-    selected_date = request.GET.get('date')
-
-    try:
-        data = Production.objects.get(production_date = selected_date)
-    except Production.DoesNotExist:
-        data = None
-    
-    form = ProductionForm()
 
     if request.method == 'POST' :
         form = ProductionForm(request.POST)
