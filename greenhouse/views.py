@@ -2,6 +2,8 @@ from django.shortcuts import render
 from django.shortcuts import redirect, render
 from django.core.paginator import Paginator
 from django.db.models import Q
+from django.contrib.auth.decorators import login_required
+
 
 
 import calendar
@@ -14,6 +16,7 @@ from .forms import ProductionForm
 # Create your views here.  
 
 #index/calendar view function
+@login_required(login_url='/accounts/login/')
 def calendar_view(request):
     current_user = request.user
     username = current_user.username
@@ -33,9 +36,10 @@ def calendar_view(request):
     return render(request, 'index.html', context)
 
 #production form
-def production_data(request):
+@login_required(login_url='/accounts/login/')
+def upload_prod_data(request):
     today = datetime.today()
-    selected_date = request.GET.get('date', today)
+    selected_date = request.GET.get('date')
 
     try:
         data = Production.objects.get(production_date = selected_date)
@@ -45,20 +49,17 @@ def production_data(request):
     form = ProductionForm()
 
     if request.method == 'POST' :
-        form = ProductionForm(request.POST, instance=data)
+        form = ProductionForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('index')
-        else:
-            form = ProductionForm(instance=data)
+            data = form.save(commit=False)
+            data.save()
+        return redirect('index')
+    else:
+        form = ProductionForm(instance=data)
     return render(request, 'production.html',{'form':form,'today': today})
 
-#Login Page
-def login(request, id):
-    user = User.objects.filter(id = id)
-    return redirect('/')
-
 #report generation
+@login_required(login_url='/accounts/login/')
 def generate_report(request):
     data = Production.objects.all()
 

@@ -10,7 +10,7 @@ class Production(models.Model):
     greenhouse_number = models.IntegerField()
     variety = models.CharField(max_length=50)
     length = models.DecimalField(max_digits=5, decimal_places=2)
-    staff_member = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    staff_member = models.OneToOneField(User, on_delete=models.SET_NULL , null=True)
     rejected_flowers = models.IntegerField(null=True, blank=True)
     rejection_reason = models.CharField(max_length=100, blank=True, null=True)
 

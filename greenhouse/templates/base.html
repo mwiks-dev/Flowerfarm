@@ -50,38 +50,38 @@
         </style>
     {% endblock%}
 </head>
-<header class="fixed-top">
-    <!-- Navbar -->
-    <!-- Toggle button -->
-    <div class="toggle-button" id="toggleButton">
-        <button type="submit" class="bg-green-600 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">--</button>
-    </div>
-    <div class="flex">
-        <!-- Side Nav -->
-        <aside class=" side-nav border-r" id="sideNav">
-            <!-- Logo and Header -->
-            <div class="p-4 border-b">
-                <h1 class="text-xl text-center font-semibold">Company Logo</h1>
-            </div>
-            <!-- Navigation Links -->
-            <nav class="p-4">
-                <ul>
-                    <li class="mb-2">
-                        <a href="{% url 'index' %}" class="block p-2 hover:bg-green-400 rounded transition duration-300">Home</a>
-                    </li>
-                    <li class="mb-2">
-                        <a href="#" class="block p-2 hover:bg-green-400 rounded transition duration-300">Profile</a>
-                    </li>
-                    <li class="mb-2">
-                        <a href="{% url 'reports' %}" class="block p-2 hover:bg-green-400 rounded transition duration-300">Reports</a>
-                    </li>
-                </ul>
-            </nav>
-        </aside>
-    </div>
-  </header>
-<body>
-    <div class="content" id="content">
+<body class="max-h-max ">
+    <header class="fixed-top">
+        <!-- Navbar -->
+        <!-- Toggle button -->
+        <div class="toggle-button" id="toggleButton">
+            <button type="submit" class="bg-green-600 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded ">--</button>
+        </div>
+        <div class="flex">
+            <!-- Side Nav -->
+            <aside class=" side-nav border-r" id="sideNav">
+                <!-- Logo and Header -->
+                <div class="p-4 border-b">
+                    <h1 class="text-xl text-center font-semibold">Company Logo</h1>
+                </div>
+                <!-- Navigation Links -->
+                <nav class="p-4">
+                    <ul>
+                        <li class="mb-2">
+                            <a href="{% url 'index' %}" class="block p-2 hover:bg-green-400 rounded transition duration-300">Home</a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="#" class="block p-2 hover:bg-green-400 rounded transition duration-300">Profile</a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="{% url 'reports' %}" class="block p-2 hover:bg-green-400 rounded transition duration-300">Reports</a>
+                        </li>
+                    </ul>
+                </nav>
+            </aside>
+        </div>
+    </header>
+    <div class="content pb-28" id="content">
         {% block content %} 
         {%endblock%}
     </div>
@@ -107,6 +107,26 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     {% endblock %}
 </body>
-<footer>
+<footer class=" bg-black">
+    <div class= "rounded-t-md w-full p-6">
+        <div class="flex justify-between ">
+            <div class="border-r-2">&nsubset;
+                <h1 class="text-xl text-white text-center font-semibold"> Company Logo</h1>
+            </div>
+            <div class="border-r-2">
+                <h1 class="text-xl text-white text-center font-semibold"> What We Do</h1>
+            </div>
+            <div class="border-r-2">&nsubset;
+                <h1 class="text-xl text-white text-center font-semibold"> Support</h1>
+            </div>
+        </div>
+    </div>
+    <div class="rounded-md bg-green-600 h-full">
+        <div class="text-center text-white">
+            <p>633, Lorem Ipsum Dor</p>
+            <p>+254701020304</p>
+            <p>Email:@lorem@ipsum.com</p>
+        </div>
+    </div>
 </footer>
 </html>
