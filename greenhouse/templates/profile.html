@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<br><br><br><br>
+<div class="container-fluid">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    {% if profile.prof_photo %}
+                    <img src="{{profile.prof_photo.url}}" alt="" class="card-img-top">
+                    {%else%}
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR3aV6aq2LNho3SY8cDICGVEdRweW5u9IaZ_w&usqp=CAU"
+                        class="card-img-top" alt="My profile picture">
+                    {% endif %}
+                    <div class="card-body text-center">
+                        <p>{{profile.user.username }}</p>
+                        <h6>Joined on: <span class="badge rounded-pill bg-secondary text-white">
+                                {{ user.date_joined }} </span></h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-1">
+                  {% if request.user is user %}  
+                    <a href="{%url 'update_profile' user.id %}" class="btn btn-warning btn-sm">
+                      Edit Profile
+                    </a>
+                  {% endif %}
+            </div><hr>
+        </div>
+</div>
+
+
+{% endblock %}

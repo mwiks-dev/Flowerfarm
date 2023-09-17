@@ -6,6 +6,11 @@ class ProductionForm(forms.ModelForm):
         model = Production
         fields = ['greenhouse_number','variety','length','rejected_flowers','rejection_reason']
 
+class CreateProfileForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        exclude = ['user']
+
 class UpdateProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
