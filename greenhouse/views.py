@@ -104,7 +104,7 @@ def upload_prod_data(request):
 #report generation
 @login_required(login_url='/accounts/login/')
 def generate_report(request):
-    data = Production.objects.all()
+    data = Production.objects.order_by('-production_date')
 
     # Search functionality
     query = request.GET.get('q')
