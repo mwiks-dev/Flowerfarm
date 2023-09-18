@@ -74,6 +74,11 @@ TEMPLATES = [
     },
 ]
 
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'greenhouse.backends.CustomBackend',
+]
+
 WSGI_APPLICATION = 'flowerfarm.wsgi.application'
 
 
@@ -145,4 +150,7 @@ STATTICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = '/greenhouse/'
+
+AUTH_USER_MODEL = 'greenhouse.User'
+
 

@@ -16,8 +16,8 @@
   <form method="post" action="{% url 'login' %}">
   {% csrf_token %}
     <div class="pb-8">
-      <label for="username">{{ form.username.label_tag }}</label>
-      <input id="username" name="username" type="text" required class="px-3 py-1 border border-green-600 rounded-md sm:text-sm" placeholder="Username...">
+      <label for="username">{{ form.email.label_tag }}</label>
+      <input id="full_name" name="full_name" type="text" required class="px-3 py-1 border border-green-600 rounded-md sm:text-sm" placeholder="Username...">
     </div>
     <div class="pb-8">
       <label for="password">{{ form.password.label_tag }}</label>

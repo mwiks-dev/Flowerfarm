@@ -3,22 +3,43 @@ from django.shortcuts import redirect, render, get_object_or_404
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect, HttpResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.cache import never_cache
 from django.views import View
+from django.contrib.auth.views import LoginView
+from django.contrib.auth import authenticate, login
+
+
 
 import calendar
 from datetime import datetime
 import qrcode
 from PIL import Image
 
-from.models import Production, Profile
+from.models import Production, Profile, User
 from .forms import ProductionForm,UpdateProfileForm,CreateProfileForm
 
 # Create your views here.  
+
+#login view
+
+class CustomLoginView(LoginView):
+    template_name = 'registration/login.html'  # Replace with your login template
+
+    def form_valid(self, form):
+        # Authenticate the user using full name and password
+        email = form.cleaned_data['email']
+        password = form.cleaned_data['password']
+        user = authenticate(self.request, email=email, password=password)
+
+        if user is not None:
+            login(self.request, user)
+            return super().form_valid(form)
+        else:
+            form.add_error(None, 'Invalid login credentials')
+            return self.form_invalid(form)
 
 #create profile page
 @login_required(login_url='/accounts/login/')
