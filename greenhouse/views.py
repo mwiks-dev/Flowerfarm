@@ -28,18 +28,18 @@ from .forms import ProductionForm,UpdateProfileForm,CreateProfileForm
 class CustomLoginView(LoginView):
     template_name = 'registration/login.html'  # Replace with your login template
 
-    def form_valid(self, form):
-        # Authenticate the user using full name and password
-        email = form.cleaned_data['email']
-        password = form.cleaned_data['password']
-        user = authenticate(self.request, email=email, password=password)
+    # def form_valid(self, form):
+    #     # Authenticate the user using full name and password
+    #     email = form.cleaned_data['email']
+    #     password = form.cleaned_data['password']
+    #     user = authenticate(self.request, email=email, password=password)
 
-        if user is not None:
-            login(self.request, user)
-            return super().form_valid(form)
-        else:
-            form.add_error(None, 'Invalid login credentials')
-            return self.form_invalid(form)
+    #     if user is not None:
+    #         login(self.request, user)
+    #         return super().form_valid(form)
+    #     else:
+    #         form.add_error(None, 'Invalid login credentials')
+    #         return self.form_invalid(form)
 
 #create profile page
 @login_required(login_url='/accounts/login/')
@@ -91,7 +91,7 @@ def update_profile(request,id):
 @login_required(login_url='/accounts/login/')
 def calendar_view(request):
     current_user = request.user
-    username = current_user.username
+    username = current_user.full_name
 
     today = datetime.today()
     year = today.year
