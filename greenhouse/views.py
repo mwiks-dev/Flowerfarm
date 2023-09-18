@@ -108,12 +108,14 @@ def calendar_view(request):
     return render(request, 'index.html', context)
 
 #production form
-@login_required(login_url='/accounts/login/')
+@login_required(login_url='login/')
 def upload_prod_data(request):
+    print(f"User: {request.user}")  # Debugging output
+
     today = datetime.today()
 
     if request.method == 'POST' :
-        form = ProductionForm(request.POST)
+        form = ProductionForm(request.POST, request=request)
         if form.is_valid():
             data = form.save(commit=False)
             data.save()
