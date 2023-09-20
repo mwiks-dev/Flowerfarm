@@ -9,9 +9,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.cache import never_cache
 from django.views import View
 from django.contrib.auth.views import LoginView
-from django.contrib.auth import authenticate, login
-
-
+from django.views.generic.edit import CreateView, UpdateView
+from django.urls import reverse_lazy
 
 import calendar
 from datetime import datetime
@@ -29,21 +28,22 @@ class CustomLoginView(LoginView):
     template_name = 'registration/login.html' 
 
 #create profile page
-@login_required(login_url='/accounts/login/')
-def create_profile(request):
-    current_user = request.user
-    title = "Create Profile"
-    if request.method == 'POST':
-        form = CreateProfileForm(request.POST, request.FILES)
-        if form.is_valid():
-            profile = form.save(commit=False)
-            profile.user = current_user
-            profile.save()
-        return HttpResponseRedirect('/profile')
+# @login_required(login_url='/greenhouse/login/')
+class UserProfileCreateView(CreateView):
+    model = Profile
+    form_class = CreateProfileForm
+    template_name = 'create_profile.html'
+    success_url = reverse_lazy('profile')
 
-    else:
-        form = CreateProfileForm()
-    return render(request, 'create_profile.html', {"form": form, "title": title})
+    def form_valid(self, form):
+        # Associate the user with the profile
+        form.instance.user = self.request.user 
+        
+        # Handle the uploaded file, if provided
+        if self.request.FILES.get('prof_photo'):
+            form.instance.prof_photo = self.request.FILES['prof_photo']
+
+        return super().form_valid(form)
 
 #profile page
 @login_required(login_url='/accounts/login/')
@@ -54,25 +54,12 @@ def user_profile(request):
     return render(request,"profile.html",{'profile':profile})
 
 # update profile page
-@login_required(login_url='/accounts/login/')
-def update_profile(request,id):
-    user = User.objects.get(id=id)
-    try:
-        profile = Profile.objects.get(user=user)
-    except Profile.DoesNotExist:
-        return redirect('create_profile')
-
-    form = UpdateProfileForm()
-    if request.method == "POST":
-        form = UpdateProfileForm(request.POST,request.FILES,instance=profile)
-        if form.is_valid():  
-            profile = form.save(commit=False)
-            profile.save()
-        return redirect('profile') 
-    else:
-        form = UpdateProfileForm()
-            
-    return render(request, 'update_profile.html', {"form":form})
+# @login_required(login_url='/accounts/login/')
+class UserProfileUpdateView(UpdateView):
+    model = Profile
+    form_class = UpdateProfileForm
+    template_name = 'update_profile.html'
+    success_url = reverse_lazy('/greenhouse/profile')
 
 #index/calendar view function
 @login_required(login_url='/accounts/login/')

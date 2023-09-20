@@ -1,7 +1,7 @@
 from django.urls import path
 
 from . import views
-from .views import GenerateQRCodeView,CustomLoginView
+from .views import GenerateQRCodeView,CustomLoginView, UserProfileCreateView, UserProfileUpdateView
 
 
 import datetime
@@ -13,7 +13,7 @@ urlpatterns = [
     path('production_data/', views.upload_prod_data, name='production_data'),
     path('reports/', views.generate_report, name='reports'),
     path('profile/', views.user_profile, name='profile'),
-    path('create_profile/', views.create_profile, name='create_profile'),
-    path('update_profile/<int:id>', views.update_profile, name='update_profile'),
+    path('create_profile/', UserProfileCreateView.as_view(), name='create_profile'),
+    path('update_profile/<int:id>', UserProfileUpdateView.as_view(), name='update_profile'),
     path('generate_qr_code/<int:pk>/', GenerateQRCodeView.as_view(), name='generate_qr_code'),
 ]
