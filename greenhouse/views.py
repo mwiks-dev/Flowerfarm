@@ -26,20 +26,7 @@ from .forms import ProductionForm,UpdateProfileForm,CreateProfileForm
 #login view
 
 class CustomLoginView(LoginView):
-    template_name = 'registration/login.html'  # Replace with your login template
-
-    # def form_valid(self, form):
-    #     # Authenticate the user using full name and password
-    #     email = form.cleaned_data['email']
-    #     password = form.cleaned_data['password']
-    #     user = authenticate(self.request, email=email, password=password)
-
-    #     if user is not None:
-    #         login(self.request, user)
-    #         return super().form_valid(form)
-    #     else:
-    #         form.add_error(None, 'Invalid login credentials')
-    #         return self.form_invalid(form)
+    template_name = 'registration/login.html' 
 
 #create profile page
 @login_required(login_url='/accounts/login/')
@@ -114,10 +101,11 @@ def upload_prod_data(request):
 
     today = datetime.today()
 
+    form = ProductionForm(request.POST or None, request.FILES or None, user=request.user)
     if request.method == 'POST' :
-        form = ProductionForm(request.POST, request=request)
         if form.is_valid():
             data = form.save(commit=False)
+            data.user = request.user
             data.save()
         return redirect('index')
     else:
@@ -133,7 +121,7 @@ def generate_report(request):
     query = request.GET.get('q')
     if query:
         data = data.filter(Q(variety__icontains=query) | Q(greenhouse_number__icontains=query))
-    paginator = Paginator(data, 3)
+    paginator = Paginator(data, 10)
 
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)

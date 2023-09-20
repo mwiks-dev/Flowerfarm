@@ -22,7 +22,6 @@
                 position: fixed;
                 top: 0;
                 left: 0;
-                background-color: green;
                 overflow-x: hidden;
                 transition: 0.3s;
                 padding-top: 7px;
@@ -55,11 +54,11 @@
         <!-- Navbar -->
         <!-- Toggle button -->
         <div class="toggle-button" id="toggleButton">
-            <button type="submit" class="bg-green-600 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded ">--</button>
+            <button type="submit" class="bg-[#a5274a] hover:bg-rose-500 text-white font-bold py-2 px-4 rounded ">--</button>
         </div>
         <div class="flex">
             <!-- Side Nav -->
-            <aside class=" side-nav border-r" id="sideNav">
+            <aside class=" side-nav bg-[#a5274a] border-r" id="sideNav">
                 <!-- Logo and Header -->
                 <div class="p-4 border-b">
                     <h1 class="text-xl text-center font-semibold">Company Logo</h1>
@@ -69,13 +68,13 @@
                     <ul>
 
                         <li class="mb-2">
-                            <a href="{% url 'index' %}" class="block p-2 hover:bg-green-400 rounded transition duration-300">Home</a>
+                            <a href="{% url 'index' %}" class="block p-2 hover:bg-rose-500 rounded transition duration-300">Home</a>
                         </li>
                         <li class="mb-2">
-                            <a href="{% url 'profile' %}" class="block p-2 hover:bg-green-400 rounded transition duration-300">Profile</a>
+                            <a href="{% url 'profile' %}" class="block p-2 hover:bg-rose-500 rounded transition duration-300">Profile</a>
                         </li>
                         <li class="mb-2">
-                            <a href="{% url 'reports' %}" class="block p-2 hover:bg-green-400 rounded transition duration-300">Reports</a>
+                            <a href="{% url 'reports' %}" class="block p-2 hover:bg-rose-500 rounded transition duration-300">Reports</a>
                         </li>
                         
 
@@ -110,7 +109,7 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     {% endblock %}
 </body>
-<footer class=" bg-black">
+<footer class=" bg-[#2f292a]">
     <div class= "rounded-t-md w-full p-6">
         <div class="flex justify-between ">
             <div class="border-r-2">&nsubset;
@@ -124,7 +123,7 @@
             </div>
         </div>
     </div>
-    <div class="rounded-md bg-green-600 h-full">
+    <div class="rounded-md bg-[#a5274a] h-full">
         <div class="text-center text-white">
             <p>633, Lorem Ipsum Dor</p>
             <p>+254701020304</p>
