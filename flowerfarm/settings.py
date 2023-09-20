@@ -151,7 +151,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = 'login'
 
-LOGIN_REDIRECT_URL = '/greenhouse/'
+LOGIN_REDIRECT_URL = '/greenhouse/create_profile'
 
 AUTH_USER_MODEL = 'greenhouse.User'
 

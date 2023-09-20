@@ -39,7 +39,7 @@ def create_profile(request):
             profile = form.save(commit=False)
             profile.user = current_user
             profile.save()
-        return HttpResponseRedirect('/greenhouse')
+        return HttpResponseRedirect('/profile')
 
     else:
         form = CreateProfileForm()

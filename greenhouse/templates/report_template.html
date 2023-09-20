@@ -34,6 +34,7 @@
                     <td class="text-center border-r border-b border-gray-300">{{ item.staff_member }}</td>
                     <td class="text-center border-r border-b border-gray-300">{{ item.rejected_flowers }}</td>
                     <td class="text-center border-r border-b border-gray-300">{{ item.rejection_reason }}</td>
+                    
                     <td class="text-center border-r border-b border-gray-300">
                         <a href="{% url 'generate_qr_code' pk=item.pk %}" class="font-bold underline underline-offset-4">Generate QR Code</a>
                     </td>
