@@ -51,6 +51,11 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.full_name
+    
+    class Meta:
+        db_table = 'greenhouse_user'
+        # Add verbose name
+        verbose_name = 'Staff Member'
 
     
 class Production(models.Model):
