@@ -1,5 +1,5 @@
 from django import forms
-from .models import Production, Profile
+from .models import Production
 
 class ProductionForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -17,14 +17,3 @@ class ProductionForm(forms.ModelForm):
     class Meta:
         model = Production
         fields = ['greenhouse_number','variety','length','rejected_flowers','rejection_reason']
-
-
-class CreateProfileForm(forms.ModelForm):
-    class Meta:
-        model = Profile
-        exclude = ['user']
-
-class UpdateProfileForm(forms.ModelForm):
-    class Meta:
-        model = Profile
-        exclude = ['user']

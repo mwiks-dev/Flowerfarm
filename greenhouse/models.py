@@ -2,6 +2,8 @@ from django.db import models
 from django.utils.translation import gettext as _
 from django.contrib.auth.models import  BaseUserManager, AbstractBaseUser, PermissionsMixin
 from django.conf import settings
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 from cloudinary.models import CloudinaryField
 from django.utils import timezone
@@ -33,9 +35,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     full_name = models.CharField(max_length=30)
     date_joined = models.DateTimeField(default=timezone.now)
-    staff_number = models.IntegerField(null=True)
+    staff_number = models.IntegerField(null=True,unique=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    prof_photo = CloudinaryField('image', default='https://res.cloudinary.com/mwikali/image/upload/v1695192612/icons8-user-90_pt1zqi.png')
+    phone_number = models.CharField(max_length=10, default='0701010101')
 
     objects = CustomUserManager()
 
@@ -61,22 +65,3 @@ class Production(models.Model):
 
     def __str__(self):
         return f"Production for {self.production_date}"
-
-class Profile(models.Model):
-    prof_photo = CloudinaryField('image')
-    phone_number = models.CharField(max_length=10)
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,null=True)
-
-    def __str__(self):
-        return f"Profile for {self.user}"
-
-    def save_profile(self):
-        self.save()
-
-    def update_profile(self):
-        self.save()
-
-    @classmethod
-    def get_profile_by_user(cls, user):
-        profile = cls.objects.filter(user=user)
-        return profile

@@ -9,16 +9,17 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.cache import never_cache
 from django.views import View
 from django.contrib.auth.views import LoginView
-from django.views.generic.edit import CreateView, UpdateView
 from django.urls import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic.edit import UpdateView
 
 import calendar
 from datetime import datetime
 import qrcode
 from PIL import Image
 
-from.models import Production, Profile, User
-from .forms import ProductionForm,UpdateProfileForm,CreateProfileForm
+from.models import Production, User
+from .forms import ProductionForm
 
 # Create your views here.  
 
@@ -27,42 +28,25 @@ from .forms import ProductionForm,UpdateProfileForm,CreateProfileForm
 class CustomLoginView(LoginView):
     template_name = 'registration/login.html' 
 
-#create profile page
-# @login_required(login_url='/greenhouse/login/')
-class UserProfileCreateView(CreateView):
-    model = Profile
-    form_class = CreateProfileForm
-    template_name = 'create_profile.html'
-    success_url = reverse_lazy('profile')
+class UserDetailUpdateView(LoginRequiredMixin, UpdateView):
+    model = User  
+    template_name = 'update.html'  # Create this template
+    fields = ['full_name', 'email','prof_photo','phone_number'] 
+    success_url = '/greenhouse/profile/'
+
+    def get_object(self, queryset=None):
+        # Retrieve the user object based on the provided primary key (pk)
+        return get_object_or_404(self.model, pk=self.kwargs['pk'])
 
     def form_valid(self, form):
-        # Associate the user with the profile
-        form.instance.user = self.request.user 
-        
-        # Handle the uploaded file, if provided
-        if self.request.FILES.get('prof_photo'):
-            form.instance.prof_photo = self.request.FILES['prof_photo']
-
+        # Save the updated user details
+        user = form.save()
+        # You can perform additional actions if needed
         return super().form_valid(form)
-
-#profile page
-@login_required(login_url='/accounts/login/')
-def user_profile(request):
-    current_user = request.user
-    profile = Profile.objects.filter(user_id=current_user.id).first()
-
-    return render(request,"profile.html",{'profile':profile})
-
-# update profile page
-# @login_required(login_url='/accounts/login/')
-class UserProfileUpdateView(UpdateView):
-    model = Profile
-    form_class = UpdateProfileForm
-    template_name = 'update_profile.html'
-    success_url = reverse_lazy('/greenhouse/profile')
+    
 
 #index/calendar view function
-@login_required(login_url='/accounts/login/')
+@login_required(login_url='/login/')
 def calendar_view(request):
     current_user = request.user
     username = current_user.full_name
@@ -81,8 +65,18 @@ def calendar_view(request):
     }
     return render(request, 'index.html', context)
 
+#user details page
+@login_required(login_url='/login/')
+def user_details(request):
+    current_user = request.user
+    profile = User.objects.filter(id=current_user.id).first()
+
+    return render(request,"profile.html",{'profile':profile})
+
+
+
 #production form
-@login_required(login_url='login/')
+@login_required(login_url='/login/')
 def upload_prod_data(request):
     print(f"User: {request.user}")  # Debugging output
 
