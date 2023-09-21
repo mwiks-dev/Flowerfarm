@@ -60,7 +60,7 @@ class Production(models.Model):
     length = models.DecimalField(max_digits=5, decimal_places=2)
     rejected_flowers = models.IntegerField(null=True, blank=True)
     rejection_reason = models.CharField(max_length=100, blank=True, null=True)
-    staff_member = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)    
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,null=True)
 
 
     def __str__(self):

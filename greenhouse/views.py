@@ -11,7 +11,7 @@ from django.views import View
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic.edit import UpdateView
+from django.views.generic.edit import UpdateView, CreateView
 
 import calendar
 from datetime import datetime
@@ -73,28 +73,20 @@ def user_details(request):
 
     return render(request,"profile.html",{'profile':profile})
 
-
-
 #production form
-@login_required(login_url='/login/')
-def upload_prod_data(request):
-    print(f"User: {request.user}")  # Debugging output
+class ProductionCreateView(CreateView):
+    model = Production
+    form_class = ProductionForm
+    template_name = 'production.html'
+    success_url = reverse_lazy('reports')
 
-    today = datetime.today()
+    def form_valid(self, form):
+        # Associate the user with the profile
+        form.instance.user = self.request.user 
 
-    form = ProductionForm(request.POST or None, request.FILES or None, user=request.user)
-    if request.method == 'POST' :
-        if form.is_valid():
-            data = form.save(commit=False)
-            data.user = request.user
-            data.save()
-        return redirect('index')
-    else:
-        form = ProductionForm()
-    return render(request, 'production.html',{'form':form,'today': today})
-
+        return super().form_valid(form)
+    
 #report generation
-@login_required(login_url='/accounts/login/')
 def generate_report(request):
     data = Production.objects.order_by('-production_date')
 
