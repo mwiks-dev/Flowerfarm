@@ -7,16 +7,17 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.cache import never_cache
-from django.views import View
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import UpdateView, CreateView
+from django.views.generic import View
 
 import calendar
 from datetime import datetime
 import qrcode
 from PIL import Image
+import csv
 
 from.models import Production, User
 from .forms import ProductionForm
@@ -109,10 +110,8 @@ class GenerateQRCodeView(View):
         # Retrieve the object from the model based on the primary key (pk)
         prod_data = get_object_or_404(Production, pk=pk)
         
-        # Concatenate the fields (name, age, and gender) into a single string
-        rejects = str(prod_data.rejected_flowers) if prod_data.rejected_flowers is not None else ""
-        rej_reason = prod_data.rejection_reason if prod_data.rejection_reason is not None else ""
-        data_to_encode = f"Date: {prod_data.production_date},  Variety: {prod_data.variety}, Length: {prod_data.length}, GreenHouse Number: {prod_data.greenhouse_number}, User: {prod_data.user}, Rejects: {prod_data.rejected_flowers}, Reason: {prod_data.rejection_reason}"
+        # Concatenate the fields into a single string
+        data_to_encode = f"Date: {prod_data.production_date},  Variety: {prod_data.variety}, Length: {prod_data.length}, GreenHouse Number: {prod_data.greenhouse_number}, Staff: {prod_data.user}, Rejects: {prod_data.rejected_flowers}, Reason: {prod_data.rejection_reason}"
         
         # Create a QR code instance
         qr = qrcode.QRCode(
@@ -134,3 +133,34 @@ class GenerateQRCodeView(View):
         img.save(response, "PNG")
         
         return response
+    
+class ProductionDataCSVView(View):
+    def get(self, request):
+        # Query the production data you want to include in the report
+        production_data = Production.objects.order_by('-production_date')
+        # Create a CSV response
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="production_report.csv"'
+
+        # Create a CSV writer
+        writer = csv.writer(response)
+
+        # Write the CSV header
+        writer.writerow(['Date', 'Variety', 'Length', 'Greenhouse Number', 'Staff', 'Rejects', 'Reason'])
+
+        # Write production data rows
+        for data in production_data:
+            user_staff_number = data.user.staff_number if data.user and hasattr(data.user, 'staff_number') else ''
+
+            writer.writerow([
+                data.production_date,
+                data.variety,
+                data.length,
+                data.greenhouse_number,
+                user_staff_number , 
+                data.rejected_flowers,
+                data.rejection_reason,
+            ])
+
+        return response
+
