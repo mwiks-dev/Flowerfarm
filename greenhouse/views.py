@@ -111,8 +111,8 @@ class GenerateQRCodeView(View):
         
         # Concatenate the fields (name, age, and gender) into a single string
         rejects = str(prod_data.rejected_flowers) if prod_data.rejected_flowers is not None else ""
-        rej_reason = prod_data.rejection_reason if prod_data.rejection_reason else ""
-        data_to_encode = f"Date: {prod_data.production_date}, Variety: {prod_data.variety}, Length: {prod_data.length}"
+        rej_reason = prod_data.rejection_reason if prod_data.rejection_reason is not None else ""
+        data_to_encode = f"Date: {prod_data.production_date},  Variety: {prod_data.variety}, Length: {prod_data.length}, GreenHouse Number: {prod_data.greenhouse_number}, User: {prod_data.user}, Rejects: {prod_data.rejected_flowers}, Reason: {prod_data.rejection_reason}"
         
         # Create a QR code instance
         qr = qrcode.QRCode(
