@@ -12,6 +12,7 @@ from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import UpdateView, CreateView
 from django.views.generic import View
+from django.contrib.auth.decorators import user_passes_test
 
 import calendar
 from datetime import datetime
@@ -25,7 +26,6 @@ from .forms import ProductionForm
 # Create your views here.  
 
 #login view
-
 class CustomLoginView(LoginView):
     template_name = 'registration/login.html' 
 
@@ -133,8 +133,15 @@ class GenerateQRCodeView(View):
         img.save(response, "PNG")
         
         return response
-    
+
+def is_admin(user):
+    return user.is_superuser
+
 class ProductionDataCSVView(View):
+    @method_decorator(user_passes_test(is_admin))
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
     def get(self, request):
         # Query the production data you want to include in the report
         production_data = Production.objects.order_by('-production_date')
@@ -161,6 +168,7 @@ class ProductionDataCSVView(View):
                 data.rejected_flowers,
                 data.rejection_reason,
             ])
-
+        
         return response
+    
 
