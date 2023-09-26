@@ -33,7 +33,7 @@ class CustomLoginView(LoginView):
 
 class UserDetailUpdateView(LoginRequiredMixin, UpdateView):
     model = User  
-    template_name = 'update.html'  # Create this template
+    template_name = 'update_profile.html'  # Create this template
     fields = ['prof_photo','full_name', 'email','phone_number'] 
     success_url = '/greenhouse/profile/'
 

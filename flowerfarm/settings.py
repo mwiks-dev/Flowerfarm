@@ -161,6 +161,13 @@ LOGIN_REDIRECT_URL = '/greenhouse/'
 
 AUTH_USER_MODEL = 'greenhouse.User'
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # Gmail's SMTP server
+EMAIL_PORT = 587  # Port for TLS
+EMAIL_USE_TLS = True  # Use TLS for secure communication
+EMAIL_HOST_USER = 'mwiksdev@gmail.com'  # Your Gmail email address
+EMAIL_HOST_PASSWORD = 'fqer ezmy vbpe uqbn'  # Use the generated app password
+
 
 
 

@@ -1,10 +1,8 @@
 from django.urls import path
+from django.contrib.auth.views import PasswordResetConfirmView
 
 from . import views
 from .views import GenerateQRCodeView,CustomLoginView, UserDetailUpdateView, ProductionCreateView, ProductionDataCSVView
-
-
-import datetime
 
 urlpatterns = [
     # path('', views.index, name='index'),
@@ -17,5 +15,7 @@ urlpatterns = [
     path('user/<int:pk>/update/', UserDetailUpdateView.as_view(),name='update_user'),
     path('generate_qr_code/<int:pk>/', GenerateQRCodeView.as_view(), name='generate_qr_code'),
     path('download-production-csv/', ProductionDataCSVView.as_view(), name='download_production_csv'),
+    path('activate/<str:uidb64>/<str:token>/', PasswordResetConfirmView.as_view(), name='activate_account'),
+
 
 ]

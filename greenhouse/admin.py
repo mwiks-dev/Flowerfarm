@@ -6,6 +6,33 @@ from django.contrib.auth.forms import ReadOnlyPasswordHashField
 
 from .models import Production, User
 
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.urls import reverse
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+
+def send_invitation_email(modeladmin, request, queryset):
+    for user in queryset:
+        # Generate an invitation token for each user
+        token = default_token_generator.make_token(user)
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+
+        # Create the invitation link
+        invitation_link = request.build_absolute_uri(
+            reverse('activate_account', args=[uid, token])
+        )
+
+        # Compose and send the invitation email
+        subject = 'Invitation to Join Our Platform'
+        message = f"Click the following link to join our platform: {invitation_link}"
+        sender = 'mwiksdev@gmail.com'
+        recipient_list = [user.email]
+        send_mail(subject, message, sender, recipient_list,  fail_silently=False)
+
+send_invitation_email.short_description = 'Send Invitation Email'
+
 # Register your models here.
 admin.site.register(Production)
 
@@ -53,6 +80,7 @@ class UserChangeForm(forms.ModelForm):
         return self.initial["password"]
     
 class UserAdmin(BaseUserAdmin):
+    actions = [send_invitation_email]
     # The forms to add and change user instances
     form = UserChangeForm
     add_form = UserCreationForm
