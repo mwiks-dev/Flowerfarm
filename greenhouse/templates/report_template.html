@@ -1,54 +1,54 @@
 {% extends 'base.html' %}
 {% block content %}
 <!-- report_template.html -->
-<div class="text-center pt-14 sm:text-left">
-    <h1>Reports</h1>
-    <div class="py-4">
+<div class="text-center pt-14 sm:text-center">
+    <div class="p-4 border-b">
+        <h1 class="text-2xl text-center font-semibold">Reports</h1>
+    </div>    
+    <div class="py-8">
         <form method="GET">
-            <input type="text" name="q" placeholder="Search by Variety or G-House No." value="{{ query }}">
+            <input type="text" name="q" class="border-2 border-solid border-rose-500" placeholder="Search by Variety or G-House No." value="{{ query }}">
             <button type="submit" class="bg-[#a5274a] hover:bg-rose-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Search</button>
         </form>
     </div>
-    <button type="submit" class="bg-[#a5274a] hover:bg-rose-500 text-white font-bold py-2 px-4 rounded ">
-        <a href="{% url 'download_production_csv' %}">Download Reports</a></a>
-    </button>
-
     <!-- Display Data -->
-    <table>
-        <thead>
-            <tr class="border-b border-gray-300 mx-auto">
-                <th>Date</th>
-                <th>G-House No.</th>
-                <th>Variety</th>
-                <th>Length</th>
-                <th>Staff No.</th>
-                <th>Rejected Flowers</th>
-                <th>Rejection Reason</th>
-
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in page_obj %}
-                <tr>
-                    <td class="text-center border-r border-b border-gray-300">{{ item.production_date }}</td>
-                    <td class="text-center border-r border-b border-gray-300">{{ item.greenhouse_number }}</td>
-                    <td class="text-center border-r border-b border-gray-300">{{ item.variety }}</td>
-                    <td class="text-center border-r border-b border-gray-300">{{ item.length }}</td>
-                    <td class="text-center border-r border-b border-gray-300">{{ item.user.staff_number }}</td>
-                    <td class="text-center border-r border-b border-gray-300">{{ item.rejected_flowers }}</td>
-                    <td class="text-center border-r border-b border-gray-300">{{ item.rejection_reason }}</td>
-                    
-                    <td class="text-center border-r border-b border-gray-300">
-                        <a href="{% url 'generate_qr_code' pk=item.pk %}" class="font-bold underline underline-offset-4">Generate QR Code</a>
-                    </td>
+    <div class="flex justify-center">
+        <table >
+            <thead>
+                <tr class="border border-rose-500 mx-auto">
+                    <th>Date</th>
+                    <th>G-House No.</th>
+                    <th>Variety</th>
+                    <th>Length</th>
+                    <th>Staff No.</th>
+                    <th>Rejected Flowers</th>
+                    <th>Rejection Reason</th>
+    
                 </tr>
-            {% empty %}
-                <tr>
-                    <td colspan="2">No data found.</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {% for item in page_obj %}
+                    <tr>
+                        <td class="text-center border border-rose-500">{{ item.production_date }}</td>
+                        <td class="text-center border border-rose-500">{{ item.greenhouse_number }}</td>
+                        <td class="text-center border border-rose-500">{{ item.variety }}</td>
+                        <td class="text-center border border-rose-500">{{ item.length }}</td>
+                        <td class="text-center border border-rose-500">{{ item.user.staff_number }}</td>
+                        <td class="text-center border border-rose-500">{{ item.rejected_flowers }}</td>
+                        <td class="text-center border border-rose-500">{{ item.rejection_reason }}</td>
+                        
+                        <td class="text-center border border-rose-500">
+                            <a href="{% url 'generate_qr_code' pk=item.pk %}" class="font-bold text-[#a5274a] underline underline-offset-4">Generate QR Code</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="2">No data found.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
     <!-- Pagination Controls -->
     <div class="pagination text-center pt-2">
@@ -58,13 +58,19 @@
                 <!-- <a href="?page={{ page_obj.previous_page_number }}">previous</a> -->
             {% endif %}
 
-            <span class="current-page text-green-600 text-ellipsis ">Page {{ page_obj.number }}</span>
+            <span class="current-page text-rose-500 text-ellipsis ">Page {{ page_obj.number }}</span>
 
             {% if page_obj.has_next %}
                 <a href="?page={{ page_obj.next_page_number }}"> Next &raquo;</a>
                 <!-- <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a> -->
             {% endif %}
         </span>
+    </div>
+
+    <div class="py-6">
+        <button type="submit" class="bg-[#a5274a] hover:bg-rose-500 text-white font-bold py-2 px-4 rounded ">
+            <a href="{% url 'download_production_csv' %}">Download Reports</a></a>
+        </button>
     </div>
 </div>
 

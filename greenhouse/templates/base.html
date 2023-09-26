@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>GreenHouse</title>
+<title>Baraka Roses</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
@@ -61,12 +61,11 @@
             <aside class=" side-nav bg-[#a5274a] border-r" id="sideNav">
                 <!-- Logo and Header -->
                 <div class="p-4 border-b">
-                    <h1 class="text-xl text-center font-semibold">Company Logo</h1>
+                    <h1 class="text-2xl text-center text-white font-semibold">BARAKA ROSES NGORIKA</h1>
                 </div>
                 <!-- Navigation Links -->
                 <nav class="p-4">
                     <ul>
-
                         <li class="mb-2">
                             <a href="{% url 'index' %}" class="block p-2 hover:bg-rose-500 rounded transition duration-300">Home</a>
                         </li>
@@ -76,8 +75,16 @@
                         <li class="mb-2">
                             <a href="{% url 'reports' %}" class="block p-2 hover:bg-rose-500 rounded transition duration-300">Reports</a>
                         </li>
-                        
-
+                        {% if user.is_authenticated %}
+                        <li class="mb-2">
+                            <a href="{% url 'logout' %}" class="block p-2 hover:bg-rose-500 rounded transition duration-300">Logout</a>
+                        </li>
+                        {% else %}
+                        <li class="mb-2">
+                            <a href="{% url 'login' %}" class="block p-2 hover:bg-rose-500 rounded transition duration-300">Login</a>
+                        </li>
+                            </div>
+                        {% endif %}
                     </ul>
                 </nav>
             </aside>
@@ -101,7 +108,7 @@
                 content.style.marginTop = '0';
             } else {
                 sideNav.style.width = '100%';
-                content.style.marginTop = '17%';
+                content.style.marginTop = '19%';
             }
         });
     </script>

@@ -1,13 +1,15 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="text-center pt-14 sm:text-center">
-    <h1>Welcome, {{ username|title }}</h1>
+    <div class="p-4 border-b">
+        <h1 class="text-2xl text-center font-bold">Welcome, {{ user.full_name | title}}</h1>
+    </div>
     <div class="flex justify-center">
-        <table class="border border-gray-300 w-3/4 ">
+        <table class="border border-rose-500  w-3/4 ">
             <tr>
                 <th class="text-red-600">{{ year }} - {{ month }}</th>
             </tr>
-            <tr class="border-b border-gray-300 mx-auto">
+            <tr class="border-b border-rose-500 mx-auto">
                 <th>Mon</th>
                 <th>Tue</th>
                 <th>Wed</th>
@@ -17,17 +19,17 @@
                 <th>Sun</th>
             </tr>
             {% for week in calendar %}
-                <tr class="border-b border-gray-300">
+                <tr class="border-b border-rose-500 p-6">
                     {% for day in week %}
                         {% if day != 0 %}
                             {% if day == today %}
-                                <td class="border-r border-b border-gray-300">
+                                <td class="border-r border-b border-rose-500 ">
                                     <a href="{% url 'production_data'%}">
                                             {{ day }}(Today)
                                     </a>
                                 </td>
                             {% else %}
-                                <td class="border-r border-b border-gray-300">{{ day }}</td>
+                                <td class="border-r border-b border-rose-500 ">{{ day }}</td>
                             {% endif %}
                         {% else %}
                             <td>&nbsp;</td>

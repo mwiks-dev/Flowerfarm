@@ -1,17 +1,20 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="text-center pt-14 sm:text-center">
+    <div class="p-4 border-b">
+        <h1 class="text-2xl text-center font-semibold">Your Profile</h1>
+    </div>
     {% if profile.prof_photo %}
-    <div class="flex justify-center items-center">
+    <div class="flex justify-center pt-4 items-center">
         <img class="rounded-full border-4 border-[#a5274a] w-40 h-40" src="{{profile.prof_photo.url}}" alt="My Profile">
     {%else%}
         <img src="https://res.cloudinary.com/mwikali/image/upload/v1695192612/icons8-user-90_pt1zqi.png" alt="My profile picture">
     {% endif %}
     </div>
     <h2 class="font-bold text-2xl p-5">{{user.full_name }}</h2>
-    <h2 class="font-medium text-2xl pb-2">{{user.email }}</h2>
-    <h2 class="font-medium text-2xl pb-2">{{user.phone_number }}</h2>
-    <h2 class="font-medium text-2xl pb-4">Staff No: {{user.staff_number }}</h2>
+    <h2 class="font-light text-xl pb-2">{{user.email }}</h2>
+    <h2 class="font-light text-xl pb-2">{{user.phone_number }}</h2>
+    <h2 class="font-light text-xl pb-4">Staff No: {{user.staff_number }}</h2>
 
 
     <h6 class="text-lg py-2">Joined on:{{ user.date_joined }}</h6>

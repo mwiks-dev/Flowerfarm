@@ -3,7 +3,7 @@ from django.shortcuts import redirect, render, get_object_or_404
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.cache import never_cache
@@ -13,6 +13,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import UpdateView, CreateView
 from django.views.generic import View
 from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth import logout
+
 
 import calendar
 from datetime import datetime
@@ -88,6 +90,7 @@ class ProductionCreateView(CreateView):
         return super().form_valid(form)
     
 #report generation
+@login_required(login_url='/login/')
 def generate_report(request):
     data = Production.objects.order_by('-production_date')
 
@@ -170,5 +173,12 @@ class ProductionDataCSVView(View):
             ])
         
         return response
+    
+def custom_logout(request):
+    farewell_message = "Goodbye, {}! We hope to see you again soon.".format(request.user.username)
+    logout(request)
+
+    # Redirect the user to a different page after logout.
+    return render(request, 'registration/logout.html', {'message':farewell_message})
     
 
