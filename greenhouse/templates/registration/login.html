@@ -1,10 +1,15 @@
 {% extends 'registration/base.html' %}
 {% load crispy_forms_tags %}
 {% block content %}
-<h2>Login</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form | crispy  }}
-    <button type="submit">Login</button>
-</form>
+<div class="text-center pt-14 sm:text-center">
+    <h1 class="text-xl font-bold underline underline-offset-8 pb-4">Login</h1>
+    <p class="bg-rose-200 w-1/2 mx-auto p-4">Welcome back!</p>
+    <form method="post"  class="p-6 w-1/2 mx-auto ">
+        {% csrf_token %}
+        {{ form | crispy  }}
+        <div class="pt-6">
+            <button type="submit" class="bg-[#a5274a] hover:bg-rose-500 text-white font-bold py-2 px-4 rounded ">Login</button>
+        </div>
+    </form>
+</div>
 {% endblock %}
