@@ -1,12 +1,15 @@
 {% extends 'base.html' %}
+{% load crispy_forms_tags %}
 {% block content %}
-<div class="text-center pt-14 sm:text-left">
-    <h1 class="text-xl font-bold underline underline-offset-8">Production Data Entry for {{ today }}</h1>
-    <div class="rounded-sm shadow-xl w-auto p-6">
-        <form method="post">
+<div class="text-center pt-14 sm:text-center">
+    <h1 class="text-xl font-bold underline underline-offset-8">Production Data Entry</h1>
+    <div class="rounded-sm shadow-xl shadow-rose-500 w-auto">
+        <form method="post" class="p-6 w-1/2 mx-auto ">
             {% csrf_token %}
-            {{  form.as_p  }}
-            <button type="submit" class="bg-green-600 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Save</button>
+            {{  form|crispy }}
+            <div class="pt-6">
+                <button type="submit" class="bg-[#a5274a] hover:bg-rose-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Save</button>
+            </div>
         </form>
     </div>
 </div>
