@@ -168,6 +168,6 @@ EMAIL_USE_TLS = True  # Use TLS for secure communication
 EMAIL_HOST_USER = 'mwiksdev@gmail.com'  # Your Gmail email address
 EMAIL_HOST_PASSWORD = 'fqer ezmy vbpe uqbn'  # Use the generated app password
 
-
+PASSWORD_RESET_EMAIL_TEMPLATE = 'custom_password_reset_email.html'
 
 

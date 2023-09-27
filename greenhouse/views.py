@@ -14,7 +14,13 @@ from django.views.generic.edit import UpdateView, CreateView
 from django.views.generic import View
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth import logout
-
+from django.contrib.auth import get_user_model
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str  # Use force_str here
+from django.shortcuts import render, redirect
+from django.contrib.auth import login
+from django.contrib.auth.forms import SetPasswordForm
 
 import calendar
 from datetime import datetime
@@ -30,6 +36,34 @@ from .forms import ProductionForm
 #login view
 class CustomLoginView(LoginView):
     template_name = 'registration/login.html' 
+
+User = get_user_model()
+
+def custom_activation_view(request, uidb64, token):
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+
+        if default_token_generator.check_token(user, token):
+            # Create a SetPasswordForm for the user
+            if request.method == 'POST':
+                form = SetPasswordForm(user, request.POST)
+                if form.is_valid():
+                    form.save()
+                    # Log the user in after setting the password
+                    login(request, user)
+                    return redirect('custom_activation_success')
+            else:
+                form = SetPasswordForm(user)
+
+            return render(request, 'custom_activation.html', {'form': form})
+
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        pass
+
+    # Activation failed; you can customize this error page
+    return render(request, 'activation_error.html')
+
 
 class UserDetailUpdateView(LoginRequiredMixin, UpdateView):
     model = User  
