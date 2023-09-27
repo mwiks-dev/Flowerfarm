@@ -159,6 +159,8 @@ LOGIN_URL = 'login'
 
 LOGIN_REDIRECT_URL = '/greenhouse/'
 
+LOGOUT_REDIRECT_URL='/greenhouse/login/'
+
 AUTH_USER_MODEL = 'greenhouse.User'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

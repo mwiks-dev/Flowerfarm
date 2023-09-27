@@ -2,13 +2,13 @@ from django.urls import path
 from django.contrib.auth.views import PasswordResetConfirmView
 
 from . import views
-from .views import GenerateQRCodeView,CustomLoginView, UserDetailUpdateView, ProductionCreateView, ProductionDataCSVView
+from .views import GenerateQRCodeView,CustomLoginView, UserDetailUpdateView, ProductionCreateView, ProductionDataCSVView, CustomLogoutView
 
 urlpatterns = [
     # path('', views.index, name='index'),
     path('', views.calendar_view, name='index'),
     path('login/', CustomLoginView.as_view(), name='login'),
-    path('logout/', views.custom_logout, name='logout'),
+    path('logout/', views.CustomLogoutView.as_view(), name='logout'),
     path('production_data/', ProductionCreateView.as_view() , name='production_data'),
     path('reports/', views.generate_report, name='reports'),
     path('profile/', views.user_details, name='profile'),

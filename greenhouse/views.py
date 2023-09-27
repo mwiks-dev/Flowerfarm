@@ -21,6 +21,8 @@ from django.utils.encoding import force_bytes, force_str  # Use force_str here
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from django.contrib.auth.forms import SetPasswordForm
+from django.contrib.auth.views import LogoutView
+
 
 import calendar
 from datetime import datetime
@@ -207,12 +209,13 @@ class ProductionDataCSVView(View):
             ])
         
         return response
-    
-def custom_logout(request):
-    farewell_message = "Goodbye, {}! We hope to see you again soon.".format(request.user.username)
-    logout(request)
+class CustomLogoutView(LogoutView):
+    next_page = 'login'
+# def custom_logout(request):
+#     farewell_message = "Goodbye, {}! We hope to see you again soon.".format(request.user.username)
+#     logout(request)
 
-    # Redirect the user to a different page after logout.
-    return render(request, 'registration/logout.html', {'message':farewell_message})
+#     # Redirect the user to a different page after logout.
+#     return render(request, 'registration/logout.html', {'message':farewell_message})
     
 
