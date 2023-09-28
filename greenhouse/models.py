@@ -70,3 +70,4 @@ class Production(models.Model):
 
     def __str__(self):
         return f"Production for {self.production_date}"
+
