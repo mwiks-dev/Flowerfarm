@@ -5,7 +5,6 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 
 from .models import Production, User
-
 from django.core.mail import send_mail
 from django.urls import reverse
 from django.contrib.auth.tokens import default_token_generator
@@ -34,6 +33,8 @@ send_invitation_email.short_description = 'Send Invitation Email'
 
 # Register your models here.
 admin.site.register(Production)
+
+
 
 class UserCreationForm(forms.ModelForm):
     #A form for creating new users. Includes all the required

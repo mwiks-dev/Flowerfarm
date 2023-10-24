@@ -122,7 +122,9 @@ class ProductionCreateView(CreateView):
     def form_valid(self, form):
         # Associate the user with the profile
         form.instance.user = self.request.user 
-
+        print(form.cleaned_data['varieties'])
+        # self.object = form.save(commit = False)        
+        # form.save()
         return super().form_valid(form)
     
 #report generation
@@ -200,7 +202,7 @@ class ProductionDataCSVView(View):
 
             writer.writerow([
                 data.production_date,
-                data.variety,
+                data.varieties,
                 data.length,
                 data.greenhouse_number,
                 user_staff_number , 
