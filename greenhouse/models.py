@@ -151,7 +151,7 @@ class Production(models.Model):
         ('Yellowing', 'Yellowing'),
     ]
 
-    production_date = models.DateField()
+    production_date = models.DateField(auto_now=True)
     greenhouse_number = models.CharField(max_length=50, choices=GREENHOUSE_NUMBERS, default='GH 1')
     varieties = models.CharField(max_length=50, choices=VARIETIES_CHOICES,default='Athena') 
     total_number = models.IntegerField(default=0)
@@ -282,7 +282,7 @@ class RejectedData(models.Model):
     ]
 
 
-    rejection_date = models.DateField()
+    rejection_date = models.DateField(auto_now_add=True)
     greenhouse_number = models.CharField(max_length=50, choices=GREENHOUSE_NUMBERS, default ='GH 1')
     varieties = models.CharField(max_length=50, choices=VARIETIES_CHOICES,default='Athena') 
     rejected_number = models.IntegerField(default=0)

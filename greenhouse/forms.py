@@ -4,7 +4,7 @@ from .models import Production, RejectedData
 class ProductionForm(forms.ModelForm):
     class Meta:
         model = Production
-        fields = ['greenhouse_number','varieties','length']
+        fields = ['greenhouse_number','varieties','total_number','length']
 
 class RejectedDataForm(forms.ModelForm):
     class Meta:

@@ -3,7 +3,7 @@
 <!-- report_template.html -->
 <div class="text-center pt-14 sm:text-center">
     <div class="p-4 border-b">
-        <h1 class="text-2xl text-center font-semibold">Reports</h1>
+        <h1 class="text-2xl text-center font-semibold">Rejected Data Report</h1>
     </div>    
     <div class="py-8">
         <form method="GET">
@@ -19,27 +19,21 @@
                     <th>Date</th>
                     <th>G-House No.</th>
                     <th>Variety</th>
-                    <th>Length</th>
+                    <th>Rejected Number</th>
+                    <th>Rejected Reason</th>
                     <th>Staff No.</th>
-                    <th>Rejected Flowers</th>
-                    <th>Rejection Reason</th>
     
                 </tr>
             </thead>
             <tbody>
                 {% for item in page_obj %}
                     <tr>
-                        <td class="text-center border border-rose-500">{{ item.production_date }}</td>
+                        <td class="text-center border border-rose-500">{{ item.rejection_date }}</td>
                         <td class="text-center border border-rose-500">{{ item.greenhouse_number }}</td>
                         <td class="text-center border border-rose-500">{{ item.varieties }}</td>
-                        <td class="text-center border border-rose-500">{{ item.length }}</td>
-                        <td class="text-center border border-rose-500">{{ item.user.staff_number }}</td>
-                        <td class="text-center border border-rose-500">{{ item.rejected_flowers }}</td>
+                        <td class="text-center border border-rose-500">{{ item.rejected_number }}</td>
                         <td class="text-center border border-rose-500">{{ item.rejection_reason }}</td>
-                        
-                        <td class="text-center border border-rose-500">
-                            <a href="{% url 'generate_qr_code' pk=item.pk %}" class="font-bold text-[#a5274a] underline underline-offset-4">Generate QR Code</a>
-                        </td>
+                        <td class="text-center border border-rose-500">{{ item.user.staff_number }}</td>
                     </tr>
                 {% empty %}
                     <tr>
@@ -69,7 +63,7 @@
 
     <div class="py-6">
         <button type="submit" class="bg-[#a5274a] hover:bg-rose-500 text-white font-bold py-2 px-4 rounded ">
-            <a href="{% url 'download_production_csv' %}">Download Reports</a></a>
+            <a href="{% url 'download_rejection_csv' %}">Download Reports</a></a>
         </button>
     </div>
 </div>

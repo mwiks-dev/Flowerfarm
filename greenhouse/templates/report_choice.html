@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="text-center pt-14 sm:text-center">
+    <h1 class="text-xl font-bold underline underline-offset-8 pb-4">Choose The Type of Data You Want To Enter</h1>
+    <div class="rounded-sm shadow-xl shadow-rose-500 w-auto p-6">
+        <div class="flex">
+            <div class="w-1/2">
+                <form action="{% url 'production_data_report' %}">
+                    <button type="submit" class="bg-[#a5274a] hover:bg-green-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Production Data Report</button>
+                </form>              
+            </div>
+            <div class="w-1/2">
+                <form action="{% url 'rejected_data_report' %}">
+                    <button type="submit" class="bg-[#a5274a] hover:bg-rose-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Rejected Data Report</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

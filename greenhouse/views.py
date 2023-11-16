@@ -132,7 +132,7 @@ class ProductionCreateView(CreateView):
     model = Production
     form_class = ProductionForm
     template_name = 'production.html'
-    success_url = reverse_lazy('reports')
+    success_url = reverse_lazy('report_choice_page')
 
     def form_valid(self, form):
         # Associate the user with the profile
@@ -147,17 +147,20 @@ class RejectedDataCreateView(CreateView):
     model = RejectedData
     form_class = RejectedDataForm
     template_name = 'reject.html'
-    success_url = reverse_lazy('reports')
+    success_url = reverse_lazy('report_choice_page')
 
     def form_valid(self, form):
         form.instance.user = self.request.user
 
         return super().form_valid(form)
 
-    
+#report choice page
+def report_choice_page(request):
+
+    return render(request, 'report_choice.html')
+   
 #report generation
-@login_required(login_url='/login/')
-def generate_report(request):
+def production_report(request):
     data = Production.objects.order_by('-production_date')
 
     # Search functionality
@@ -169,7 +172,22 @@ def generate_report(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    return render(request, 'report_template.html',{'page_obj':page_obj} )
+    return render(request, 'production_report.html',{'page_obj':page_obj} )
+
+#rejection report
+def rejection_report(request):
+    data = RejectedData.objects.order_by('-rejection_date')
+
+    # Search functionality
+    query = request.GET.get('q')
+    if query:
+        data = data.filter(Q(variety__icontains=query) | Q(greenhouse_number__icontains=query))
+    paginator = Paginator(data, 10)
+
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'rejected_report.html',{'page_obj':page_obj} )
 
 #qr code generation
 @method_decorator(csrf_exempt, name='dispatch')
@@ -180,7 +198,7 @@ class GenerateQRCodeView(View):
         prod_data = get_object_or_404(Production, pk=pk)
         
         # Concatenate the fields into a single string
-        data_to_encode = f"Date: {prod_data.production_date},  Variety: {prod_data.variety}, Length: {prod_data.length}, GreenHouse Number: {prod_data.greenhouse_number}, Staff: {prod_data.user}, Rejects: {prod_data.rejected_flowers}, Reason: {prod_data.rejection_reason}"
+        data_to_encode = f"Date: {prod_data.production_date},  Variety: {prod_data.varieties}, Length: {prod_data.length}, GreenHouse Number: {prod_data.greenhouse_number}, Staff: {prod_data.user}"
         
         # Create a QR code instance
         qr = qrcode.QRCode(
@@ -207,7 +225,7 @@ def is_admin(user):
     return user.is_superuser
 
 class ProductionDataCSVView(View):
-    @method_decorator(user_passes_test(is_admin))
+    # @method_decorator(user_passes_test(is_admin))
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
 
@@ -222,7 +240,7 @@ class ProductionDataCSVView(View):
         writer = csv.writer(response)
 
         # Write the CSV header
-        writer.writerow(['Date', 'Variety', 'Length', 'Greenhouse Number', 'Staff', 'Rejects', 'Reason'])
+        writer.writerow(['Date', 'Variety', 'Length', 'Greenhouse Number', 'Staff'])
 
         # Write production data rows
         for data in production_data:
@@ -233,11 +251,41 @@ class ProductionDataCSVView(View):
                 data.varieties,
                 data.length,
                 data.greenhouse_number,
-                user_staff_number , 
-                data.rejected_flowers,
-                data.rejection_reason,
+                user_staff_number 
             ])
         
+        return response
+    
+class RejectionDataCSVView(View):
+    # @method_decorator(user_passes_test(is_admin))
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+    def get(self, request):
+        # Query the rejection data you want to include in the report
+        rejection_data = RejectedData.objects.order_by('-rejection_date')
+        # Create a CSV response
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="rejected-data_report.csv"'
+
+        # Create a CSV writer
+        writer = csv.writer(response)
+
+        # Write the CSV header
+        writer.writerow(['Date', 'Variety','Greenhouse Number', 'Staff', 'Rejects', 'Reason'])
+
+        # Write rejection data rows
+        for data in rejection_data:
+            user_staff_number = data.user.staff_number if data.user and hasattr(data.user, 'staff_number') else ''
+
+            writer.writerow([
+                data.rejection_date,
+                data.varieties,
+                data.greenhouse_number,
+                user_staff_number , 
+                data.rejected_number,
+                data.rejection_reason,
+            ])
         return response
 class CustomLogoutView(LogoutView):
     next_page = 'login'
