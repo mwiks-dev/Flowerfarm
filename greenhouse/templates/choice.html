@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="text-center pt-14 sm:text-center">
+    <h1 class="text-xl font-bold underline underline-offset-8 pb-4">Choose the type of data you want to enter</h1>
+    <div class="rounded-sm shadow-xl shadow-rose-500 w-auto">
+        <form action="{% url 'production_data' %}">
+            <button type="submit">Production Data</button>
+        </form>
+        <form action="{% url 'rejected_data' %}">
+            <button type="submit">Rejected Data</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

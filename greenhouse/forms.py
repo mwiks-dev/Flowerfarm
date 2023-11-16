@@ -9,6 +9,6 @@ class ProductionForm(forms.ModelForm):
 class RejectedDataForm(forms.ModelForm):
     class Meta:
         model = RejectedData
-        fields = ['greenhouse_number','varieties','rejected_number','length','rejection_reason']
+        fields = ['greenhouse_number','varieties','rejected_number','rejection_reason']
 
     

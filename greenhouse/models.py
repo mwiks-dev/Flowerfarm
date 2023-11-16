@@ -286,7 +286,6 @@ class RejectedData(models.Model):
     greenhouse_number = models.CharField(max_length=50, choices=GREENHOUSE_NUMBERS, default ='GH 1')
     varieties = models.CharField(max_length=50, choices=VARIETIES_CHOICES,default='Athena') 
     rejected_number = models.IntegerField(default=0)
-    length = models.DecimalField(max_digits=5, decimal_places=2)
     rejection_reason = models.CharField(max_length=50,choices=REJECTION_REASONS, default='Bent Stems')
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,null=True)
 

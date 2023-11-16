@@ -25,13 +25,12 @@ from django.contrib.auth.views import LogoutView
 
 
 import calendar
-from datetime import datetime
+import datetime
 import qrcode
-from PIL import Image
 import csv
 
-from.models import Production, User
-from .forms import ProductionForm
+from.models import Production, User, RejectedData
+from .forms import ProductionForm, RejectedDataForm
 
 # Create your views here.  
 
@@ -90,19 +89,35 @@ def calendar_view(request):
     current_user = request.user
     username = current_user.full_name
 
-    today = datetime.today()
+    today = datetime.date.today()
+    allowed_days = today - datetime.timedelta(days=5)
+    formatted_dates = []
+
+    # Iterate through the range of dates from allowed_time to current_date
+    while allowed_days <= today:
+        formatted_date = allowed_days.strftime("%Y-%m-%d")
+        formatted_dates.append(formatted_date)
+        allowed_days += datetime.timedelta(days=1)
+
+    print(formatted_dates)
     year = today.year
     month = today.month
     cal = calendar.monthcalendar(year, month)
+    
 
     context = {
         'username':username,
         'year': year,
         'month': month,
         'calendar': cal,
-        'today': today.day,
+        'allowed_time': allowed_days,
+        'formatted_dates':formatted_dates
     }
     return render(request, 'index.html', context)
+#choice page
+def choice_page(request):
+
+    return render(request, 'choice.html')
 
 #user details page
 @login_required(login_url='/login/')
@@ -122,10 +137,23 @@ class ProductionCreateView(CreateView):
     def form_valid(self, form):
         # Associate the user with the profile
         form.instance.user = self.request.user 
-        print(form.cleaned_data['varieties'])
+        # print(form.cleaned_data['varieties'])
         # self.object = form.save(commit = False)        
         # form.save()
         return super().form_valid(form)
+    
+#rejected data form
+class RejectedDataCreateView(CreateView):
+    model = RejectedData
+    form_class = RejectedDataForm
+    template_name = 'reject.html'
+    success_url = reverse_lazy('reports')
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+
+        return super().form_valid(form)
+
     
 #report generation
 @login_required(login_url='/login/')
