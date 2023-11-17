@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="text-center pt-14 sm:text-center">
+    <h1 class="text-2xl text-center font-bold p-6">Welcome, {{ user.full_name | title}}</h1>
     <h1 class="text-xl font-bold underline underline-offset-8 pb-4">Choose The Type of Data You Want To Enter</h1>
     <div class="rounded-sm shadow-xl shadow-rose-500 w-auto p-6">
         <div class="flex">

@@ -5,7 +5,7 @@ from . import views
 from .views import GenerateQRCodeView,CustomLoginView, UserDetailUpdateView, ProductionCreateView, ProductionDataCSVView, RejectedDataCreateView, RejectionDataCSVView
 urlpatterns = [
     # path('', views.index, name='index'),
-    path('', views.calendar_view, name='index'),
+    # path('', views.calendar_view, name='index'),
     path('login/', CustomLoginView.as_view(), name='login'),
     path('logout/', views.CustomLogoutView.as_view(), name='logout'),
     path('choice_page/', views.choice_page, name='choice_page'),

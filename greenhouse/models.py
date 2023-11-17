@@ -151,11 +151,21 @@ class Production(models.Model):
         ('Yellowing', 'Yellowing'),
     ]
 
-    production_date = models.DateField(auto_now=True)
+    LENGTH_CHOICES = [
+            ('35', '35 cm'),
+            ('40', '40 cm'),
+            ('50', '50 cm'),
+            ('60', '60 cm'),
+            ('70', '70 cm'),
+            ('80', '80 cm'),
+            ('90', '90 cm'),
+        ]
+
+    production_date = models.DateField()
     greenhouse_number = models.CharField(max_length=50, choices=GREENHOUSE_NUMBERS, default='GH 1')
-    varieties = models.CharField(max_length=50, choices=VARIETIES_CHOICES,default='Athena') 
+    varieties = models.CharField(max_length=50, choices=VARIETIES_CHOICES,default='Athena')
     total_number = models.IntegerField(default=0)
-    length = models.DecimalField(max_digits=5, decimal_places=2)
+    length = models.CharField(max_length=10,choices=LENGTH_CHOICES, default='0')
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,null=True)
 
 
@@ -282,7 +292,7 @@ class RejectedData(models.Model):
     ]
 
 
-    rejection_date = models.DateField(auto_now_add=True)
+    rejection_date = models.DateField()
     greenhouse_number = models.CharField(max_length=50, choices=GREENHOUSE_NUMBERS, default ='GH 1')
     varieties = models.CharField(max_length=50, choices=VARIETIES_CHOICES,default='Athena') 
     rejected_number = models.IntegerField(default=0)

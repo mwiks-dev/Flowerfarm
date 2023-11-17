@@ -23,7 +23,7 @@
                     {% for day in week %}
                         {% if day != 0 %}
                                 <td class="border-r border-b border-rose-500 ">
-                                    <a href="{% url 'choice_page'%}">
+                                    <a href="{% url 'choice_page'%}?selected_date={{ year }}-{{ month|stringformat:"02d" }}-{{ day|stringformat:"02d" }}">
                                             {{ day }}
                                     </a>
                                 </td>

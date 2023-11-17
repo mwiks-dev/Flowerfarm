@@ -84,40 +84,27 @@ class UserDetailUpdateView(LoginRequiredMixin, UpdateView):
     
 
 #index/calendar view function
+# @login_required(login_url='/login/')
+# def calendar_view(request):
+    
+#     today = datetime.date.today()
+#     year = today.year
+#     month = today.month
+#     cal = calendar.monthcalendar(year, month)
+    
+    
+#     return render(request, 'index.html', context)
+#choice page
 @login_required(login_url='/login/')
-def calendar_view(request):
+def choice_page(request):
     current_user = request.user
     username = current_user.full_name
 
-    today = datetime.date.today()
-    allowed_days = today - datetime.timedelta(days=5)
-    formatted_dates = []
-
-    # Iterate through the range of dates from allowed_time to current_date
-    while allowed_days <= today:
-        formatted_date = allowed_days.strftime("%Y-%m-%d")
-        formatted_dates.append(formatted_date)
-        allowed_days += datetime.timedelta(days=1)
-
-    print(formatted_dates)
-    year = today.year
-    month = today.month
-    cal = calendar.monthcalendar(year, month)
-    
-
     context = {
         'username':username,
-        'year': year,
-        'month': month,
-        'calendar': cal,
-        'allowed_time': allowed_days,
-        'formatted_dates':formatted_dates
     }
-    return render(request, 'index.html', context)
-#choice page
-def choice_page(request):
 
-    return render(request, 'choice.html')
+    return render(request, 'choice.html', context)
 
 #user details page
 @login_required(login_url='/login/')
@@ -140,6 +127,11 @@ class ProductionCreateView(CreateView):
         # print(form.cleaned_data['varieties'])
         # self.object = form.save(commit = False)        
         # form.save()
+        selected_date_str = self.request.GET.get('selected_date', None)
+
+        if selected_date_str:
+            selected_date = datetime.strptime(selected_date_str, "%Y-%m-%d").date()
+            form.instance.production_date = selected_date
         return super().form_valid(form)
     
 #rejected data form
@@ -240,7 +232,7 @@ class ProductionDataCSVView(View):
         writer = csv.writer(response)
 
         # Write the CSV header
-        writer.writerow(['Date', 'Variety', 'Length', 'Greenhouse Number', 'Staff'])
+        writer.writerow(['Date', 'Greenhouse Number', 'Variety','Number of stems', 'Length','Staff'])
 
         # Write production data rows
         for data in production_data:
@@ -248,9 +240,10 @@ class ProductionDataCSVView(View):
 
             writer.writerow([
                 data.production_date,
-                data.varieties,
-                data.length,
                 data.greenhouse_number,
+                data.varieties,
+                data.total_nubmber,
+                data.length,
                 user_staff_number 
             ])
         
@@ -272,7 +265,7 @@ class RejectionDataCSVView(View):
         writer = csv.writer(response)
 
         # Write the CSV header
-        writer.writerow(['Date', 'Variety','Greenhouse Number', 'Staff', 'Rejects', 'Reason'])
+        writer.writerow(['Date','Greenhouse Number', 'Variety','Rejected Number', 'Rejection Reason','Staff'])
 
         # Write rejection data rows
         for data in rejection_data:
@@ -280,11 +273,12 @@ class RejectionDataCSVView(View):
 
             writer.writerow([
                 data.rejection_date,
-                data.varieties,
                 data.greenhouse_number,
-                user_staff_number , 
+                data.varieties,
                 data.rejected_number,
                 data.rejection_reason,
+                user_staff_number , 
+
             ])
         return response
 class CustomLogoutView(LogoutView):

@@ -159,7 +159,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = 'login'
 
-LOGIN_REDIRECT_URL = '/greenhouse/'
+LOGIN_REDIRECT_URL = '/greenhouse/choice_page'
 
 LOGOUT_REDIRECT_URL='/greenhouse/login/'
 

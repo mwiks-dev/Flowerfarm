@@ -15,8 +15,13 @@
         <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@1,600&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
         <link rel="stylesheet"  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
         <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
         <style>
+            div.pointer-events-none{
+                display: none;
+            }
             /* Custom CSS for side nav */
             .side-nav {
                 width: 0;
@@ -68,7 +73,7 @@
                 <nav class="p-4">
                     <ul>
                         <li class="mb-2">
-                            <a href="{% url 'index' %}" class="block p-2 hover:bg-rose-500 rounded transition duration-300">Home</a>
+                            <a href="{% url 'choice_page' %}" class="block p-2 hover:bg-rose-500 rounded transition duration-300">Home</a>
                         </li>
                         <li class="mb-2">
                             <a href="{% url 'profile' %}" class="block p-2 hover:bg-rose-500 rounded transition duration-300">Profile</a>
@@ -96,6 +101,12 @@
         {%endblock%}
     </div>
     {% block scripts %}
+    <script>
+        flatpickr(".flatpickr", {
+            dateFormat: "Y-m-d",  // Customize the date format as needed
+            // Additional configuration options can be added here
+        });
+    </script>
     <script>
         // JavaScript to handle side nav toggle
         const toggleButton = document.getElementById('toggleButton');
