@@ -7,8 +7,16 @@
     </div>    
     <div class="py-8">
         <form method="GET">
-            <input type="text" name="q" class="border-2 border-solid border-rose-500" placeholder="Search by Variety or G-House No." value="{{ query }}">
-            <button type="submit" class="bg-[#a5274a] hover:bg-rose-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Search</button>
+            <!-- <input type="text" name="q" class="border-2 border-solid border-rose-500" placeholder="Search by Variety or G-House No." value="{{ query }}">
+            <button type="submit" class="bg-[#a5274a] hover:bg-rose-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Search</button> -->
+
+            <label for="start_date">Start Date:</label>
+            <input type="date" id="start_date" name="start_date" class="border-2 border-solid border-rose-500" value="{{ start_date|date:'Y-m-d' }}">
+
+            <label for="end_date">End Date:</label>
+            <input type="date" id="end_date" name="end_date" class="border-2 border-solid border-rose-500" value="{{ end_date|date:'Y-m-d' }}">
+
+            <button type="submit" class="bg-[#a5274a] hover:bg-rose-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Filter</button>
         </form>
     </div>
     <!-- Display Data -->
@@ -43,6 +51,76 @@
             </tbody>
         </table>
     </div>
+             <!-- Aggregated Data Display -->
+    <div class="p-4 border-b">
+        <h1 class="text-2xl text-center font-semibold">Aggregated Data</h1>
+    </div>    
+
+    <h3 class="text-xl text-center font-semibold pb-4">Total by Variety</h3>
+    <div class="flex justify-center">
+        <table>
+        <thead>
+            <tr class="border border-rose-500 mx-auto">
+                <th class="text-center border border-rose-500">Variety</th>
+                <th class="text-center border border-rose-500">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in total_by_variety %}
+            <tr>
+                <td class="text-center border border-rose-500">{{ item.varieties }}</td>
+                <td class="text-center border border-rose-500">{{ item.total }}</td>
+            </tr>
+            {% endfor %}
+            <tr>
+                <td class="text-center border border-rose-500"><strong>Total Amount:</strong></td>
+                <td class="text-center border border-rose-500"><strong>{{ total_amount_variety }}</strong></td>
+            </tr>
+        </tbody>
+        </table>
+    </div>
+
+    <h3 class="text-xl text-center font-semibold p-4">Total by Greenhouse</h3>
+     <div class="flex justify-center">
+
+     <table>
+         <tr>
+             <th class="text-center border border-rose-500">Greenhouse Number</th>
+             <th class="text-center border border-rose-500">Total</th>
+         </tr>
+         {% for item in total_by_greenhouse %}
+         <tr>
+             <td class="text-center border border-rose-500">{{ item.greenhouse_number }}</td>
+             <td class="text-center border border-rose-500">{{ item.total }}</td>
+         </tr>
+         {% endfor %}
+         <tr>
+             <td class="text-center border border-rose-500"><strong>Total Amount:</strong></td>
+             <td class="text-center border border-rose-500"><strong>{{ total_amount_greenhouse }}</strong></td>
+         </tr>
+     </table>
+     </div>
+
+     <h3 class="text-xl text-center font-semibold p-4">Total by Rejection Reason</h3>
+     <div class="flex justify-center">
+
+     <table>
+         <tr>
+             <th class="text-center border border-rose-500">Rejection Reason</th>
+             <th class="text-center border border-rose-500">Total</th>
+         </tr>
+         {% for item in total_by_rejectionreason %}
+         <tr>
+             <td class="text-center border border-rose-500">{{ item.rejection_reason }}</td>
+             <td class="text-center border border-rose-500">{{ item.total }}</td>
+         </tr>
+         {% endfor %}
+         <tr>
+             <td class="text-center border border-rose-500"><strong>Total Amount:</strong></td>
+             <td class="text-center border border-rose-500"><strong>{{ total_amount_greenhouse }}</strong></td>
+         </tr>
+     </table>
+     </div>
 
     <!-- Pagination Controls -->
     <div class="pagination text-center pt-2">
@@ -63,7 +141,7 @@
 
     <div class="py-6">
         <button type="submit" class="bg-[#a5274a] hover:bg-rose-500 text-white font-bold py-2 px-4 rounded ">
-            <a href="{% url 'download_rejection_csv' %}">Download Reports</a></a>
+            <a href="{% url 'download_rej_report' %}?start_date={{start_date|date:'Y-m-d' }}&end_date={{ end_date|date:'Y-m-d' }}">Download Excel Report</a>
         </button>
     </div>
 </div>

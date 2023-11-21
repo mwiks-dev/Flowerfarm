@@ -2,7 +2,7 @@ from django.urls import path
 from django.contrib.auth.views import PasswordResetConfirmView
 
 from . import views
-from .views import GenerateQRCodeView,CustomLoginView, UserDetailUpdateView, ProductionCreateView, RejectedDataCreateView,download_excel_report
+from .views import GenerateQRCodeView,CustomLoginView, UserDetailUpdateView, ProductionCreateView, RejectedDataCreateView,download_prod_report
 urlpatterns = [
     # path('', views.index, name='index'),
     # path('', views.calendar_view, name='index'),
@@ -11,7 +11,8 @@ urlpatterns = [
     path('choice_page/', views.choice_page, name='choice_page'),
     path('production_data/', ProductionCreateView.as_view() , name='production_data'),
     path('rejected_data/', RejectedDataCreateView.as_view() , name='rejected_data'),
-    path('download_excel_report/', views.download_excel_report, name='download_excel_report' ),
+    path('download_prod_report/', views.download_prod_report, name='download_prod_report' ),
+    path('download_rej_report/', views.download_rej_report, name='download_rej_report' ),
     path('production_data_report/', views.production_report, name='production_data_report'),
     path('rejected_data_report/', views.rejection_report, name='rejected_data_report'), 
     path('report_choice_page/', views.report_choice_page, name='report_choice_page'),   

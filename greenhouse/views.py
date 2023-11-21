@@ -144,7 +144,7 @@ class RejectedDataCreateView(CreateView):
     model = RejectedData
     form_class = RejectedDataForm
     template_name = 'reject.html'
-    success_url = reverse_lazy('report_choice_page')
+    success_url = reverse_lazy('rejected_data')
 
     def form_valid(self, form):
         form.instance.user = self.request.user
@@ -211,12 +211,40 @@ def rejection_report(request):
     query = request.GET.get('q')
     if query:
         data = data.filter(Q(variety__icontains=query) | Q(greenhouse_number__icontains=query))
-    paginator = Paginator(data, 10)
+    
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
 
+    if start_date and end_date:
+        start_date = datetime.strptime(start_date, '%Y-%m-%d')
+        end_date = datetime.strptime(end_date, '%Y-%m-%d')
+        data = data.filter(rejection_date__range=(start_date, end_date))
+
+    total_by_variety = data.values('varieties').annotate(total=Sum('rejected_number')).order_by('varieties')
+    total_by_greenhouse = data.values('greenhouse_number').annotate(total=Sum('rejected_number')).order_by('greenhouse_number')
+    total_by_rejectionreason = data.values('rejection_reason').annotate(total=Sum('rejected_number')).order_by('rejection_reason')
+
+    total_amount_variety = sum(item['total'] for item in total_by_variety)
+    total_amount_greenhouse = sum(item['total'] for item in total_by_greenhouse)
+    total_amount_rejectionreason = sum(item['total'] for item in total_by_rejectionreason)
+
+    paginator = Paginator(data, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    return render(request, 'rejected_report.html',{'page_obj':page_obj} )
+    context = {
+        'page_obj': page_obj,
+        'total_amount_variety': total_amount_variety,
+        'total_amount_greenhouse': total_amount_greenhouse,
+        'total_amount_variety_length': total_amount_rejectionreason,
+        'total_by_variety': total_by_variety,
+        'total_by_greenhouse': total_by_greenhouse,
+        'total_by_rejectionreason': total_by_rejectionreason,
+        'start_date': start_date,
+        'end_date': end_date
+    }
+
+    return render(request, 'rejected_report.html',context )
 
 #qr code generation
 @method_decorator(csrf_exempt, name='dispatch')
@@ -251,7 +279,7 @@ class GenerateQRCodeView(View):
         return response
 
 
-def download_excel_report(request):
+def download_prod_report(request):
     # Assuming you're recalculating the data here
     data = Production.objects.all()
     total_by_variety = data.values('varieties').annotate(total=Sum('total_number'))
@@ -345,6 +373,93 @@ def download_excel_report(request):
         response.write(b.read())
 
     return response
+
+def download_rej_report(request):
+    # Assuming you're recalculating the data here
+    data = RejectedData.objects.all()
+    total_by_variety = data.values('varieties').annotate(total=Sum('rejected_number'))
+    total_by_greenhouse = data.values('greenhouse_number').annotate(total=Sum('rejected_number'))
+    total_by_rejectionreason = data.values('rejection_reason').annotate(total=Sum('rejected_number')).order_by('rejection_reason')
+
+    total_amount_variety = sum(item['total'] for item in total_by_variety)
+    total_amount_greenhouse = sum(item['total'] for item in total_by_greenhouse)
+    total_amount_rejectionreason = sum(item['total'] for item in total_by_rejectionreason)
+
+    # Retrieve and parse date filters from the request
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    if start_date:
+        start_date = parse_date(start_date)
+    if end_date:
+        end_date = parse_date(end_date)
+
+    # Filter data based on dates
+    data = RejectedData.objects.all()
+    if start_date:
+        data = data.filter(rejection_date__gte=start_date)
+    if end_date:
+        data = data.filter(rejection_date__lte=end_date)
+
+    # Create a workbook and add a worksheet
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Rejected Stems Reports"
+
+    # Add date range information at the top of the sheet
+    date_range_info = f"Date Range: {start_date.strftime('%Y-%m-%d') if start_date else 'N/A'} to {end_date.strftime('%Y-%m-%d') if end_date else 'N/A'}"
+    ws.append([date_range_info])
+    ws.append([])  # Add an empty row for spacing
+
+
+    # Add headers to the worksheet
+    headers = ['Rejection Date', 'Greenhouse Number', 'Varieties', 'Rejected Number', 'Rejection Reason', 'Staff Number']
+
+    # Add data rows
+    for item in data:
+        row = [
+            item.rejection_date.strftime('%Y-%m-%d') if item.rejection_date else '',
+            item.greenhouse_number,
+            item.varieties,
+            item.rejected_number,
+            item.rejection_reason,
+            item.user.staff_number if item.user else ''
+        ]
+        ws.append(row)
+
+    # Adding data for variety
+    ws1 = wb.create_sheet(title='Variety Totals')
+    ws1.append(['Variety', 'Total'])
+    for item in total_by_variety:
+        ws1.append([item['varieties'], item['total']])
+    ws1.append(['Sum of Total',total_amount_variety])
+
+    # Adding data for greenhouse in a new sheet
+    ws2 = wb.create_sheet(title="Greenhouse Totals")
+    ws2.append(['Greenhouse Number', 'Total'])
+    for item in total_by_greenhouse:
+        ws2.append([item['greenhouse_number'], item['total']])
+    ws2.append(['Sum of Total',total_amount_greenhouse])
+
+    # Adding data for variety and length in a new sheet
+    ws3 = wb.create_sheet(title="Rejection Reason Totals")
+    ws3.append(['Rejection Reason','Total'])
+    for item in total_by_rejectionreason:
+        ws3.append([item['rejection_reason'], item['total']])
+    ws3.append(['Sum of Total',total_amount_rejectionreason])
+
+
+    # Save the workbook to a BytesIO object
+    response = HttpResponse(content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="report.xlsx"'
+    with BytesIO() as b:
+        wb.save(b)
+        b.seek(0)
+        response.write(b.read())
+
+    return response
+
+
 class CustomLogoutView(LogoutView):
     next_page = 'login'
 # def custom_logout(request):
