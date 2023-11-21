@@ -7,10 +7,98 @@
     </div>    
     <div class="py-8">
         <form method="GET">
-            <input type="text" name="q" class="border-2 border-solid border-rose-500" placeholder="Search by Variety or G-House No." value="{{ query }}">
-            <button type="submit" class="bg-[#a5274a] hover:bg-rose-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Search</button>
+            <!-- <input type="text" name="q" class="border-2 border-solid border-rose-500" placeholder="Search by Variety or G-House No." value="{{ query }}">
+            <button type="submit" class="bg-[#a5274a] hover:bg-rose-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Search</button> -->
+
+            <label for="start_date">Start Date:</label>
+            <input type="date" id="start_date" name="start_date" class="border-2 border-solid border-rose-500" value="{{ start_date|date:'Y-m-d' }}">
+
+            <label for="end_date">End Date:</label>
+            <input type="date" id="end_date" name="end_date" class="border-2 border-solid border-rose-500" value="{{ end_date|date:'Y-m-d' }}">
+
+            <button type="submit" class="bg-[#a5274a] hover:bg-rose-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Filter</button>
         </form>
     </div>
+
+     <!-- Aggregated Data Display -->
+     <h2>Aggregated Data</h2>
+
+     <h3>Total by Variety</h3>
+     <table>
+         <tr>
+             <th>Variety</th>
+             <th>Total</th>
+         </tr>
+         {% for item in total_by_variety %}
+         <tr>
+             <td>{{ item.varieties }}</td>
+             <td>{{ item.total }}</td>
+         </tr>
+         {% endfor %}
+         <tr>
+            <td><strong>Total Amount:</strong></td>
+            <td><strong>{{ total_amount_variety }}</strong></td>
+         </tr>
+     </table>
+     
+     <h3>Total by Greenhouse</h3>
+     <table>
+         <tr>
+             <th>Greenhouse Number</th>
+             <th>Total</th>
+         </tr>
+         {% for item in total_by_greenhouse %}
+         <tr>
+             <td>{{ item.greenhouse_number }}</td>
+             <td>{{ item.total }}</td>
+         </tr>
+         {% endfor %}
+         <tr>
+             <td><strong>Total Amount:</strong></td>
+             <td><strong>{{ total_amount_greenhouse }}</strong></td>
+         </tr>
+     </table>
+     
+     <h3>Total by Variety and Length</h3>
+     <table>
+         <tr>
+             <th>Variety</th>
+             <th>Length</th>
+             <th>Total</th>
+         </tr>
+         {% for item in total_by_variety_length %}
+         <tr>
+             <td>{{ item.varieties }}</td>
+             <td>{{ item.length }}</td>
+             <td>{{ item.total }}</td>
+         </tr>
+         {% endfor %}
+         <tr>
+             <td colspan="2"><strong>Total Amount:</strong></td>
+             <td><strong>{{ total_amount_variety_length }}</strong></td>
+         </tr>
+     </table>
+     
+     <h3>Total by Greenhouse and Length</h3>
+     <table>
+         <tr>
+             <th>Greenhouse Number</th>
+             <th>Length</th>
+             <th>Total</th>
+         </tr>
+         {% for item in total_by_greenhouse_length %}
+         <tr>
+             <td>{{ item.greenhouse_number }}</td>
+             <td>{{ item.length }}</td>
+             <td>{{ item.total }}</td>
+         </tr>
+         {% endfor %}
+         <tr>
+             <td colspan="2"><strong>Total Amount:</strong></td>
+             <td><strong>{{ total_amount_greenhouse_length}}</strong></td>
+         </tr>
+     </table>
+ 
     <!-- Display Data -->
     <div class="flex justify-center">
         <table >
@@ -67,7 +155,7 @@
 
     <div class="py-6">
         <button type="submit" class="bg-[#a5274a] hover:bg-rose-500 text-white font-bold py-2 px-4 rounded ">
-            <a href="{% url 'download_report_csv' %}">Download Reports</a></a>
+            <a href="{% url 'download_excel_report' %}?start_date={{start_date|date:'Y-m-d' }}&end_date={{ end_date|date:'Y-m-d' }}">Download Excel Report</a>
         </button>
     </div>
 </div>

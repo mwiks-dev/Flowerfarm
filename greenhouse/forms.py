@@ -1,9 +1,6 @@
 from django import forms
 from .models import Production, RejectedData
 from .widgets import DatePickerInput, TimePickerInput, DateTimePickerInput
-
-class DateInput(forms.DateInput):
-    input_type = 'date'
     
 class ProductionForm(forms.ModelForm):
     class Meta:
@@ -25,5 +22,4 @@ class RejectedDataForm(forms.ModelForm):
                     'rejection_date' : DatePickerInput(),
                     
                 }
-
     

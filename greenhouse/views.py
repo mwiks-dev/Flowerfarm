@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.shortcuts import redirect, render, get_object_or_404
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Q, Sum
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.utils.decorators import method_decorator
@@ -22,12 +22,17 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from django.contrib.auth.forms import SetPasswordForm
 from django.contrib.auth.views import LogoutView
+from django.db.models.functions import TruncDate
+from django import template
+from django.utils.dateparse import parse_date
 
 
 import calendar
-import datetime
+from datetime import datetime
 import qrcode
-import csv
+from openpyxl import Workbook
+from io import BytesIO
+
 
 from.models import Production, User, RejectedData
 from .forms import ProductionForm, RejectedDataForm
@@ -158,13 +163,45 @@ def production_report(request):
     # Search functionality
     query = request.GET.get('q')
     if query:
-        data = data.filter(Q(variety__icontains=query) | Q(greenhouse_number__icontains=query))
-    paginator = Paginator(data, 10)
+        data = data.filter(Q(varieties__icontains=query) | Q(greenhouse_number__icontains=query))
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
 
+    if start_date and end_date:
+        start_date = datetime.strptime(start_date, '%Y-%m-%d')
+        end_date = datetime.strptime(end_date, '%Y-%m-%d')
+        data = data.filter(production_date__range=(start_date, end_date))
+
+    # Aggregations
+    total_by_variety = data.values('varieties').annotate(total=Sum('total_number')).order_by('varieties')
+    total_by_greenhouse = data.values('greenhouse_number').annotate(total=Sum('total_number')).order_by('greenhouse_number')
+    total_by_variety_length = data.values('varieties', 'length').annotate(total=Sum('total_number')).order_by('varieties')
+    total_by_greenhouse_length = data.values('greenhouse_number', 'length').annotate(total=Sum('total_number')).order_by('greenhouse_number')
+
+    # Calculating totals
+    total_amount_variety = sum(item['total'] for item in total_by_variety)
+    total_amount_greenhouse = sum(item['total'] for item in total_by_greenhouse)
+    total_amount_variety_length = sum(item['total'] for item in total_by_variety_length)
+    total_amount_greenhouse_length = sum(item['total'] for item in total_by_greenhouse_length)
+
+    paginator = Paginator(data, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
+    context = {
+        'page_obj': page_obj,
+        'total_amount_variety': total_amount_variety,
+        'total_amount_greenhouse': total_amount_greenhouse,
+        'total_amount_variety_length': total_amount_variety_length,
+        'total_amount_greenhouse_length': total_amount_greenhouse_length,
+        'total_by_variety': total_by_variety,
+        'total_by_greenhouse': total_by_greenhouse,
+        'total_by_variety_length': total_by_variety_length,
+        'total_by_greenhouse_length': total_by_greenhouse_length,
+        'start_date': start_date,
+        'end_date': end_date
+    }
 
-    return render(request, 'production_report.html',{'page_obj':page_obj} )
+    return render(request, 'production_report.html', context)
 
 #rejection report
 def rejection_report(request):
@@ -213,74 +250,101 @@ class GenerateQRCodeView(View):
         
         return response
 
-def is_admin(user):
-    return user.is_superuser
 
-class ProductionDataCSVView(View):
-    # @method_decorator(user_passes_test(is_admin))
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
+def download_excel_report(request):
+    # Assuming you're recalculating the data here
+    data = Production.objects.all()
+    total_by_variety = data.values('varieties').annotate(total=Sum('total_number'))
+    total_by_greenhouse = data.values('greenhouse_number').annotate(total=Sum('total_number'))
+    total_by_variety_length = data.values('varieties', 'length').annotate(total=Sum('total_number'))
+    total_by_greenhouse_length = data.values('greenhouse_number', 'length').annotate(total=Sum('total_number'))
 
-    def get(self, request):
-        # Query the production data you want to include in the report
-        production_data = Production.objects.order_by('-production_date')
-        # Create a CSV response
-        response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename="production_report.csv"'
+    total_amount_variety = sum(item['total'] for item in total_by_variety)
+    total_amount_greenhouse = sum(item['total'] for item in total_by_greenhouse)
+    total_amount_variety_length = sum(item['total'] for item in total_by_variety_length)
+    total_amount_greenhouse_length = sum(item['total'] for item in total_by_greenhouse_length)
 
-        # Create a CSV writer
-        writer = csv.writer(response)
+    # Retrieve and parse date filters from the request
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
 
-        # Write the CSV header
-        writer.writerow(['Date', 'Greenhouse Number', 'Variety','Number of stems', 'Length','Staff'])
+    if start_date:
+        start_date = parse_date(start_date)
+    if end_date:
+        end_date = parse_date(end_date)
 
-        # Write production data rows
-        for data in production_data:
-            user_staff_number = data.user.staff_number if data.user and hasattr(data.user, 'staff_number') else ''
+    # Filter data based on dates
+    data = Production.objects.all()
+    if start_date:
+        data = data.filter(production_date__gte=start_date)
+    if end_date:
+        data = data.filter(production_date__lte=end_date)
 
-            writer.writerow([
-                data.production_date,
-                data.greenhouse_number,
-                data.varieties,
-                data.total_nubmber,
-                data.length,
-                user_staff_number 
-            ])
-        
-        return response
-    
-class RejectionDataCSVView(View):
-    # @method_decorator(user_passes_test(is_admin))
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
+    # Create a workbook and add a worksheet
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Production Reports"
 
-    def get(self, request):
-        # Query the rejection data you want to include in the report
-        rejection_data = RejectedData.objects.order_by('-rejection_date')
-        # Create a CSV response
-        response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename="rejected-data_report.csv"'
+    # Add date range information at the top of the sheet
+    date_range_info = f"Date Range: {start_date.strftime('%Y-%m-%d') if start_date else 'N/A'} to {end_date.strftime('%Y-%m-%d') if end_date else 'N/A'}"
+    ws.append([date_range_info])
+    ws.append([])  # Add an empty row for spacing
 
-        # Create a CSV writer
-        writer = csv.writer(response)
 
-        # Write the CSV header
-        writer.writerow(['Date','Greenhouse Number', 'Variety','Rejected Number', 'Rejection Reason','Staff'])
+    # Add headers to the worksheet
+    headers = ['Production Date', 'Greenhouse Number', 'Varieties', 'Total Number', 'Length', 'Staff Number']
+    ws.append(headers)
 
-        # Write rejection data rows
-        for data in rejection_data:
-            user_staff_number = data.user.staff_number if data.user and hasattr(data.user, 'staff_number') else ''
+    # Add data rows
+    for item in data:
+        row = [
+            item.production_date.strftime('%Y-%m-%d') if item.production_date else '',
+            item.greenhouse_number,
+            item.varieties,
+            item.total_number,
+            item.length,
+            item.user.staff_number if item.user else ''
+        ]
+        ws.append(row)
 
-            writer.writerow([
-                data.rejection_date,
-                data.greenhouse_number,
-                data.varieties,
-                data.rejected_number,
-                data.rejection_reason,
-                user_staff_number , 
+    # Adding data for variety
+    ws1 = wb.create_sheet(title='Variety Totals')
+    ws1.append(['Variety', 'Total'])
+    for item in total_by_variety:
+        ws1.append([item['varieties'], item['total']])
+    ws1.append(['Sum of Total',total_amount_variety])
 
-            ])
-        return response
+    # Adding data for greenhouse in a new sheet
+    ws2 = wb.create_sheet(title="Greenhouse Totals")
+    ws2.append(['Greenhouse Number', 'Total'])
+    for item in total_by_greenhouse:
+        ws2.append([item['greenhouse_number'], item['total']])
+    ws2.append(['Sum of Total',total_amount_greenhouse])
+
+    # Adding data for variety and length in a new sheet
+    ws3 = wb.create_sheet(title="Variety and Length Totals")
+    ws3.append(['Variety','Length','Total'])
+    for item in total_by_variety_length:
+        ws3.append([item['varieties'],item['length'], item['total']])
+    ws3.append(['Sum of Total',total_amount_variety_length])
+
+
+    # Adding data for greenhouse and lengths in a new sheet
+    ws4 = wb.create_sheet(title="GreenHouse Number and Length Total")
+    ws4.append(['Greenhouse Number','Length','Total'])
+    for item in total_by_greenhouse_length:
+        ws4.append([item['greenhouse_number'],item['length'],item['total']])
+    ws4.append(['Sum of Total',total_amount_greenhouse_length])
+
+    # Save the workbook to a BytesIO object
+    response = HttpResponse(content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="report.xlsx"'
+    with BytesIO() as b:
+        wb.save(b)
+        b.seek(0)
+        response.write(b.read())
+
+    return response
 class CustomLogoutView(LogoutView):
     next_page = 'login'
 # def custom_logout(request):
