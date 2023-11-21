@@ -124,7 +124,7 @@ class ProductionCreateView(CreateView):
     model = Production
     form_class = ProductionForm
     template_name = 'production.html'
-    success_url = reverse_lazy('report_choice_page')
+    success_url = reverse_lazy('production_data')
 
     def form_valid(self, form):
         # Associate the user with the profile
